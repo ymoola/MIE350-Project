@@ -129,11 +129,6 @@ We welcome contributions from the community! Please check our [Contributing Guid
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## Acknowledgments
-
-- Special thanks to [OpenAI](https://www.openai.com/) for providing advanced language models.
-- Inspiration from sustainable commuting initiatives worldwide.
-
 ---
 
 Feel free to customize this README file further to include any additional information specific to your project. This template covers the essential sections you'd typically include in a project's README.
