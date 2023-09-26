@@ -1,7 +1,4 @@
 # Internal Company Ride-Share Web Application
-
-![Project Logo](link_to_project_logo.png)
-
 ## Table of Contents
 
 - [Overview](#overview)
