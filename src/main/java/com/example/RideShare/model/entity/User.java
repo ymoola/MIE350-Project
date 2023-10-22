@@ -3,6 +3,7 @@ package com.example.RideShare.model.entity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.lang.Nullable;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -21,4 +22,19 @@ public class User {
 
     @NotEmpty
     private String password;
+
+    @Nullable
+    private String phoneNumber;
+
+    @Nullable
+    private String address;    //doesn't include postal code
+
+    @Nullable
+    private String postalCode;
+
+    @NotEmpty
+    private String firstName;
+
+    @NotEmpty
+    private String lastName;
 }
