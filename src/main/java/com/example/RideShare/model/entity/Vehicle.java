@@ -7,6 +7,7 @@ import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 @Entity
 @NoArgsConstructor
@@ -16,7 +17,7 @@ import javax.validation.constraints.NotEmpty;
 public class Vehicle {
     @Id
     @NotEmpty
-    private String licensePLate;
+    private String licensePlate;
 
     @Nullable
     private String make;
@@ -29,7 +30,7 @@ public class Vehicle {
     private String type;
 
     //Not including driver
-    @NotEmpty
+    @NotNull
     private int passengerSeats;
 
     @Nullable

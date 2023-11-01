@@ -13,7 +13,9 @@ import javax.persistence.*;
 public class Trip {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    //@GeneratedValue(strategy = GenerationType.IDENTITY)
+    //this generated value thing makes it weird, I think we shouldn't have it and instead we can have a counter somewhere in order to id trips
+    //we can also do this for trip requests and anything else that we need internally generated ids for
     private Long tripId;
 
     @ManyToOne
