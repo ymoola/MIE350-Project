@@ -1,8 +1,15 @@
 package com.example.RideShare.controller;
 
+import com.example.RideShare.controller.dto.TripDto;
 import com.example.RideShare.controller.exceptions.TripNotFoundException;
+import com.example.RideShare.controller.exceptions.UserNotFoundException;
+import com.example.RideShare.controller.exceptions.VehicleNotFoundException;
 import com.example.RideShare.model.entity.Trip;
+import com.example.RideShare.model.entity.User;
+import com.example.RideShare.model.entity.Vehicle;
 import com.example.RideShare.model.repository.TripRepository;
+import com.example.RideShare.model.repository.UserRepository;
+import com.example.RideShare.model.repository.VehicleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,33 +20,52 @@ import java.util.List;
 public class TripController {
 
     @Autowired
-    private TripRepository tripRepository;
+    private final TripRepository repository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    public TripController(TripRepository repository) {this.repository = repository;}
+
+    @Autowired
+    private VehicleRepository vehicleRepository;
 
     @GetMapping
     public List<Trip> getAllTrips() {
-        return tripRepository.findAll();
+        return repository.findAll();
     }
 
     @PostMapping
-    public Trip createTrip(@RequestBody Trip trip) {
-        return tripRepository.save(trip);
+    public Trip createTrip(@RequestBody TripDto tripDto) {
+        Trip newTrip = new Trip();
+        newTrip.setTripId(tripDto.getTripId());
+        User driver = userRepository.findById(tripDto.getDriverEmail()).orElseThrow(
+                () -> new UserNotFoundException(tripDto.getDriverEmail()));
+        newTrip.setUser(driver);
+        Vehicle vehicle = vehicleRepository.findById(tripDto.getLicensePlate()).orElseThrow(
+                () -> new VehicleNotFoundException(tripDto.getLicensePlate()));
+        newTrip.setVehicle(vehicle);
+        return repository.save(newTrip);
     }
 
     @GetMapping("/{tripId}")
     public Trip getTripById(@PathVariable Long tripId) {
-        return tripRepository.findById(tripId)
+        return repository.findById(tripId)
                 .orElseThrow(() -> new TripNotFoundException(tripId)); // Custom exception
     }
 
     // Update Trip
     @PutMapping("/{tripId}")
-    public Trip updateTrip(@RequestBody Trip updatedTrip, @PathVariable Long tripId) {
-        return tripRepository.findById(tripId)
+    public Trip updateTrip(@RequestBody TripDto updatedTripDto, @PathVariable Long tripId) {
+        return repository.findById(tripId)
                 .map(trip -> {
-                    trip.setUser(updatedTrip.getUser());
-                    trip.setVehicle(updatedTrip.getVehicle());
-                    // Set other fields if necessary
-                    return tripRepository.save(trip);
+                    User driver = userRepository.findById(updatedTripDto.getDriverEmail()).orElseThrow(
+                            () -> new UserNotFoundException(updatedTripDto.getDriverEmail()));
+                    trip.setUser(driver);
+                    Vehicle vehicle = vehicleRepository.findById(updatedTripDto.getLicensePlate()).orElseThrow(
+                            () -> new VehicleNotFoundException(updatedTripDto.getLicensePlate()));
+                    trip.setVehicle(vehicle);
+                    return repository.save(trip);
                 })
                 .orElseThrow(() -> new TripNotFoundException(tripId)); // Custom exception
     }
@@ -47,6 +73,6 @@ public class TripController {
     // Delete Trip
     @DeleteMapping("/{tripId}")
     public void deleteTrip(@PathVariable Long tripId) {
-        tripRepository.deleteById(tripId);
+        repository.deleteById(tripId);
     }
 }

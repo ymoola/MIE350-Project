@@ -16,7 +16,7 @@ import javax.validation.constraints.NotEmpty;
 public class Vehicle {
     @Id
     @NotEmpty
-    private String licensePLate;
+    private String licensePlate;
 
     @Nullable
     private String make;

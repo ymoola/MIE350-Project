@@ -29,6 +29,7 @@ public class UserController {
                 );
     }
 
+    //this doesn't need a dto because it has no foreign keys on creation
     @PostMapping
     User createUser(@RequestBody User newUser){
         return repository.save(newUser);
