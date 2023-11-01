@@ -34,6 +34,7 @@ public class VehicleController {
     public Vehicle createVehicle(@RequestBody VehicleDto vehicleDto){
         Vehicle newVehicle = new Vehicle();
         //might have to add notNull checks on these setters
+            //According to my non-rigorous testing it should be fine but I'll leave the comment just in case
         newVehicle.setLicensePlate(vehicleDto.getLicensePlate());
         newVehicle.setMake(vehicleDto.getMake());
         newVehicle.setModel(vehicleDto.getModel());
@@ -57,6 +58,7 @@ public class VehicleController {
         return repository.findById(licensePlate)
                 .map(vehicle -> {
                     //might have to add notNull checks on these setters
+                        //According to my non-rigorous testing it should be fine but I'll leave the comment just in case
                     vehicle.setMake(updatedVehicleDto.getMake());
                     vehicle.setModel(updatedVehicleDto.getModel());
                     vehicle.setType(updatedVehicleDto.getType());
