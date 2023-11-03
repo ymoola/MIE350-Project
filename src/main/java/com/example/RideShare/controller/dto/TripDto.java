@@ -6,6 +6,8 @@ import lombok.Setter;
 @Getter
 @Setter
 public class TripDto {
+    //for now we are not including date/time, this will be added later
+
     private Long tripId;
     private String driverEmail;
     private String licensePlate;

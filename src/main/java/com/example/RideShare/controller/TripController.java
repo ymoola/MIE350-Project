@@ -75,4 +75,14 @@ public class TripController {
     public void deleteTrip(@PathVariable Long tripId) {
         repository.deleteById(tripId);
     }
+
+    @GetMapping("/searchByName/{searchstring}")
+    List<Trip> searchByDriver(@PathVariable("searchstring") String searchString){
+        return repository.searchByDriver(searchString);
+    }
+
+    @GetMapping("/getDriverTrips/{email}")
+    List<Trip> getDriverTrips(@PathVariable("email") String email){
+        return repository.getDriverTrips(email);
+    }
 }

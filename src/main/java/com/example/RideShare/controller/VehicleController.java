@@ -76,4 +76,9 @@ public class VehicleController {
     public void deleteVehicle(@PathVariable String licensePlate) {
         repository.deleteById(licensePlate);
     }
+
+    @GetMapping("/getOwnerVehicles/{email}")
+    List<Vehicle> getOwnerVehicles(@PathVariable("email") String email){
+        return repository.getOwnerVehicles(email);
+    }
 }
