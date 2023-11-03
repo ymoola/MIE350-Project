@@ -10,8 +10,8 @@ INSERT INTO vehicles(licensePlate, passengerSeats, ownerEmail) VALUES('JKL789', 
 INSERT INTO vehicles(licensePlate, passengerSeats, ownerEmail) VALUES('MNO012', 5, 'lebron@king.net');
 INSERT INTO vehicles(licensePlate, passengerSeats, ownerEmail) VALUES('PQR345', 3, 'aubreyg@yahoo.com');
 
-INSERT INTO trips(tripId, driverEmail, licensePlate) VALUES(1, 'kevinjames@mallcop.com', 'ABC123');
-INSERT INTO trips(tripId, driverEmail, licensePlate) VALUES(2, 'djkhaled@gmail.com', 'XYZ456');
-INSERT INTO trips(tripId, driverEmail, licensePlate) VALUES(3, 'kanye@west.org', 'JKL789');
-INSERT INTO trips(tripId, driverEmail, licensePlate) VALUES(4, 'lebron@king.net', 'MNO012');
-INSERT INTO trips(tripId, driverEmail, licensePlate) VALUES(5, 'aubreyg@yahoo.com', 'PQR345');
+INSERT INTO trips(tripId, driverEmail, licensePlate) VALUES(901, 'kevinjames@mallcop.com', 'ABC123');
+INSERT INTO trips(tripId, driverEmail, licensePlate) VALUES(902, 'djkhaled@gmail.com', 'XYZ456');
+INSERT INTO trips(tripId, driverEmail, licensePlate) VALUES(903, 'kanye@west.org', 'JKL789');
+INSERT INTO trips(tripId, driverEmail, licensePlate) VALUES(904, 'lebron@king.net', 'MNO012');
+INSERT INTO trips(tripId, driverEmail, licensePlate) VALUES(905, 'aubreyg@yahoo.com', 'PQR345');

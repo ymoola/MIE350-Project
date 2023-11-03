@@ -10,6 +10,8 @@ import com.example.RideShare.model.entity.Vehicle;
 import com.example.RideShare.model.repository.TripRepository;
 import com.example.RideShare.model.repository.UserRepository;
 import com.example.RideShare.model.repository.VehicleRepository;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,6 +32,18 @@ public class TripController {
     @Autowired
     private VehicleRepository vehicleRepository;
 
+    @Getter
+    @Setter
+    private long TripIdCounter = 1000;
+    // the ones we enter in the SQL will be 900 start.
+    // doesn't matter where we strat the IDs. Every user initated ID (not our SQL input) will have to
+    // go through the create trip and go through this iterator
+
+    private long assignUniqueTripId(){
+        this.setTripIdCounter(1+this.getTripIdCounter());
+        return this.getTripIdCounter();
+    }
+
     @GetMapping
     public List<Trip> getAllTrips() {
         return repository.findAll();
@@ -38,7 +52,8 @@ public class TripController {
     @PostMapping
     public Trip createTrip(@RequestBody TripDto tripDto) {
         Trip newTrip = new Trip();
-        newTrip.setTripId(tripDto.getTripId());
+        //newTrip.setTripId(tripDto.getTripId()); //Aaro's old method
+        newTrip.setTripId(assignUniqueTripId()); // assign a newly generated/unique trip id
         User driver = userRepository.findById(tripDto.getDriverEmail()).orElseThrow(
                 () -> new UserNotFoundException(tripDto.getDriverEmail()));
         newTrip.setUser(driver);
