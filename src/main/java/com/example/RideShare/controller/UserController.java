@@ -1,10 +1,7 @@
 package com.example.RideShare.controller;
 
-import com.example.RideShare.controller.exceptions.TripNotFoundException;
 import com.example.RideShare.controller.exceptions.UserNotFoundException;
-import com.example.RideShare.controller.exceptions.VehicleNotFoundException;
 import com.example.RideShare.model.entity.User;
-import com.example.RideShare.model.entity.Vehicle;
 import com.example.RideShare.model.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -53,5 +50,10 @@ public class UserController {
                     return repository.save(user);
                 })
                 .orElseThrow(() -> new UserNotFoundException(email)); // Custom exception
+    }
+
+    @GetMapping("/search/{searchString}")
+    List<User> searchByName(@PathVariable("searchString") String searchString){
+        return repository.searchByName(searchString);
     }
 }
