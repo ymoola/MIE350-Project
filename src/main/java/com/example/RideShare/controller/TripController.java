@@ -11,6 +11,7 @@ import com.example.RideShare.model.repository.TripRepository;
 import com.example.RideShare.model.repository.UserRepository;
 import com.example.RideShare.model.repository.VehicleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -31,11 +32,13 @@ public class TripController {
     private VehicleRepository vehicleRepository;
 
     @GetMapping
+//    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_EMPLOYEE')")
     public List<Trip> getAllTrips() {
         return repository.findAll();
     }
 
     @PostMapping
+//    @PreAuthorize("hasAuthority('')")
     public Trip createTrip(@RequestBody TripDto tripDto) {
         Trip newTrip = new Trip();
         newTrip.setTripId(tripDto.getTripId());

@@ -4,6 +4,7 @@ import com.example.RideShare.controller.exceptions.UserNotFoundException;
 import com.example.RideShare.model.entity.User;
 import com.example.RideShare.model.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,10 +19,11 @@ public class UserController {
     public UserController(UserRepository repository) {this.repository = repository;}
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_EMPLOYEE')")
     List<User> retrieveAllUsers(){return repository.findAll();}
 
-
     @GetMapping("/{email}")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_EMPLOYEE')")
     User getByEmail(@PathVariable("email") String email){
         return repository.findById(email)
                 .orElseThrow(
@@ -29,14 +31,15 @@ public class UserController {
                 );
     }
 
-    //this doesn't need a dto because it has no foreign keys on creation
     @PostMapping
+    @PreAuthorize("hasAuthority('user:write')")
     User createUser(@RequestBody User newUser){
         return repository.save(newUser);
     }
 
     //this method allows the user to update their email, password, and everything else
     @PutMapping("/{email}")
+    @PreAuthorize("hasAuthority('user:write')")
     User updateUser(@RequestBody User updatedUser, @PathVariable("email") String email){
         return repository.findById(email)
                 .map(user -> {
@@ -53,6 +56,7 @@ public class UserController {
     }
 
     @GetMapping("/search/{searchString}")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_EMPLOYEE')")
     List<User> searchByName(@PathVariable("searchString") String searchString){
         return repository.searchByName(searchString);
     }
