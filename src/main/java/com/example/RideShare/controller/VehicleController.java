@@ -8,6 +8,8 @@ import com.example.RideShare.model.entity.Vehicle;
 import com.example.RideShare.model.repository.UserRepository;
 import com.example.RideShare.model.repository.VehicleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -48,25 +50,26 @@ public class VehicleController {
     }
 
     @GetMapping("/{licensePlate}")
-    public Vehicle getVehicleByLicensePlate(@PathVariable String licensePlate) {
+    public Vehicle getVehicleByLicensePlate(Authentication authentication, @PathVariable String licensePlate) {
+        System.out.println(authentication.getPrincipal());
         return repository.findById(licensePlate)
                 .orElseThrow(() -> new VehicleNotFoundException(licensePlate)); // Custom exception
     }
 
+
     @PutMapping("/{licensePlate}")
+    @PostAuthorize("returnObject.owner.email == authentication.principal")
     public Vehicle updateVehicle(@RequestBody VehicleDto updatedVehicleDto, @PathVariable String licensePlate) {
         return repository.findById(licensePlate)
                 .map(vehicle -> {
-                    //might have to add notNull checks on these setters
-                        //According to my non-rigorous testing it should be fine but I'll leave the comment just in case
                     vehicle.setMake(updatedVehicleDto.getMake());
                     vehicle.setModel(updatedVehicleDto.getModel());
                     vehicle.setType(updatedVehicleDto.getType());
                     vehicle.setPassengerSeats(updatedVehicleDto.getPassengerSeats());
                     vehicle.setColor(updatedVehicleDto.getColor());
-                    User owner = userRepository.findById(updatedVehicleDto.getOwnerEmail()).orElseThrow(
-                            () -> new UserNotFoundException(updatedVehicleDto.getOwnerEmail()));
-                    vehicle.setOwner(owner);
+//                    User owner = userRepository.findById(updatedVehicleDto.getOwnerEmail()).orElseThrow(
+//                            () -> new UserNotFoundException(updatedVehicleDto.getOwnerEmail()));
+//                    vehicle.setOwner(owner);
                     return repository.save(vehicle);
                 })
                 .orElseThrow(() -> new VehicleNotFoundException(licensePlate)); // Custom exception

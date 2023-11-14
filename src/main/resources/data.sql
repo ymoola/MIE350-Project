@@ -9,6 +9,7 @@ INSERT INTO vehicles(licensePlate, passengerSeats, ownerEmail) VALUES('XYZ456', 
 INSERT INTO vehicles(licensePlate, passengerSeats, ownerEmail) VALUES('JKL789', 3, 'kanye@west.org');
 INSERT INTO vehicles(licensePlate, passengerSeats, ownerEmail) VALUES('MNO012', 5, 'lebron@king.net');
 INSERT INTO vehicles(licensePlate, passengerSeats, ownerEmail) VALUES('PQR345', 3, 'aubreyg@yahoo.com');
+INSERT INTO vehicles(licensePlate, make, model, passengerSeats, ownerEmail) VALUES('JFK63', 'Lincoln', 'Continental', 2, 'kevinjames@mallcop.com');
 
 INSERT INTO trips(tripId, driverEmail, licensePlate) VALUES(1, 'kevinjames@mallcop.com', 'ABC123');
 INSERT INTO trips(tripId, driverEmail, licensePlate) VALUES(2, 'djkhaled@gmail.com', 'XYZ456');
