@@ -5,6 +5,6 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class DeleteUserConfirmationCredentials {
+public class DeleteUserConfirmationCredentialsDto {
    private String password;
 }

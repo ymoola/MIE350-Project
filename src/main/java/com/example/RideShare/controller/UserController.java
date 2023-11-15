@@ -1,8 +1,8 @@
 package com.example.RideShare.controller;
 
-import com.example.RideShare.controller.dto.DeleteUserConfirmationCredentials;
+import com.example.RideShare.controller.dto.DeleteUserConfirmationCredentialsDto;
 import com.example.RideShare.controller.dto.InformationSafeUserDto;
-import com.example.RideShare.controller.dto.UserInformationChangeRequest;
+import com.example.RideShare.controller.dto.UserInformationChangeRequestDto;
 import com.example.RideShare.controller.exceptions.EmailAlreadyTakenException;
 import com.example.RideShare.controller.exceptions.UserInformationChangeException;
 import com.example.RideShare.controller.exceptions.UserNotFoundException;
@@ -87,7 +87,7 @@ public class UserController {
     @PutMapping("/{email}")
     @PreAuthorize("(#email == authentication.principal) && " +
             "(#userInformationChangeRequest.email == authentication.principal)")
-    InformationSafeUserDto updateUser(@RequestBody UserInformationChangeRequest userInformationChangeRequest,
+    InformationSafeUserDto updateUser(@RequestBody UserInformationChangeRequestDto userInformationChangeRequest,
                                       @PathVariable("email") String email){
         User userAfterUpdate = repository.findById(email)
                 .map(user -> {
@@ -117,7 +117,7 @@ public class UserController {
     @DeleteMapping("/{email}")
     @Transactional
     @PreAuthorize("#email == authentication.principal")
-    public void deleteUser(@RequestBody DeleteUserConfirmationCredentials deleteUserConfirmationCredentials,
+    public void deleteUser(@RequestBody DeleteUserConfirmationCredentialsDto deleteUserConfirmationCredentials,
                            @PathVariable("email") String email){
         //Find the user account to delete
         User userToDelete = repository.findById(email)

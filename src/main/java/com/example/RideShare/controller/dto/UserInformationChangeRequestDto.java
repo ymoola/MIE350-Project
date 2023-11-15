@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 @Getter
 @Setter
-public class UserInformationChangeRequest {
+public class UserInformationChangeRequestDto {
     private String email;
     private String currentPassword;
     private String newPassword;
@@ -14,14 +14,14 @@ public class UserInformationChangeRequest {
     private String firstName;
     private String lastName;
 
-    public UserInformationChangeRequest(String email,
-                                        String currentPassword,
-                                        String newPassword,
-                                        String phoneNumber,
-                                        String address,
-                                        String postalCode,
-                                        String firstName,
-                                        String lastName) {
+    public UserInformationChangeRequestDto(String email,
+                                           String currentPassword,
+                                           String newPassword,
+                                           String phoneNumber,
+                                           String address,
+                                           String postalCode,
+                                           String firstName,
+                                           String lastName) {
 
         this.email = email;
         this.currentPassword = currentPassword;

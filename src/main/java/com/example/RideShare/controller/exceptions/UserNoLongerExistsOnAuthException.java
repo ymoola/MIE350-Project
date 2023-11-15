@@ -1,4 +1,4 @@
-package com.example.RideShare.controller.dto;
+package com.example.RideShare.controller.exceptions;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
