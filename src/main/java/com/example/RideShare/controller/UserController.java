@@ -7,11 +7,14 @@ import com.example.RideShare.controller.exceptions.EmailAlreadyTakenException;
 import com.example.RideShare.controller.exceptions.UserInformationChangeException;
 import com.example.RideShare.controller.exceptions.UserNotFoundException;
 import com.example.RideShare.model.entity.User;
+import com.example.RideShare.model.repository.TripRepository;
 import com.example.RideShare.model.repository.UserRepository;
+import com.example.RideShare.model.repository.VehicleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,8 +26,16 @@ public class UserController {
     @Autowired
     private final UserRepository repository;
 
-    public UserController(UserRepository repository) {
+    @Autowired
+    private final TripRepository tripRepository;
+
+    @Autowired
+    private final VehicleRepository vehicleRepository;
+
+    public UserController(UserRepository repository, TripRepository tripRepository, VehicleRepository vehicleRepository) {
         this.repository = repository;
+        this.tripRepository = tripRepository;
+        this.vehicleRepository = vehicleRepository;
     }
 
     @GetMapping
@@ -104,9 +115,10 @@ public class UserController {
 
 
     @DeleteMapping("/{email}")
+    @Transactional
     @PreAuthorize("#email == authentication.principal")
-    void deleteUser(@RequestBody DeleteUserConfirmationCredentials deleteUserConfirmationCredentials,
-                    @PathVariable("email") String email){
+    public void deleteUser(@RequestBody DeleteUserConfirmationCredentials deleteUserConfirmationCredentials,
+                           @PathVariable("email") String email){
         //Find the user account to delete
         User userToDelete = repository.findById(email)
                 .orElseThrow(()-> new UserNotFoundException(email));
@@ -115,6 +127,13 @@ public class UserController {
         if (!userToDelete.getPassword().equals(deleteUserConfirmationCredentials.getPassword()))
             throw new UserInformationChangeException(email);
 
+        //delete all trips where the user is the driver
+        tripRepository.deleteTripsByDriver(email);
+
+        //delete all vehicles owned by this user
+        vehicleRepository.deleteOwnerVehicles(email);
+
+        //remove all instances where the user is a passenger for a trip
         repository.deleteById(email);
     }
 

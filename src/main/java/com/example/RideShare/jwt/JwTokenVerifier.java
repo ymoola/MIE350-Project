@@ -1,11 +1,13 @@
 package com.example.RideShare.jwt;
 
+import com.example.RideShare.controller.dto.UserNoLongerExistsOnAuthException;
+import com.example.RideShare.model.repository.UserRepository;
 import com.google.common.base.Strings;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -24,11 +26,13 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class JwTokenVerifier extends OncePerRequestFilter {
+    private final UserRepository repository;
 
     private final SecretKey secretKey;
     private final JwtConfig jwtConfig;
 
-    public JwTokenVerifier(SecretKey secretKey, JwtConfig jwtConfig) {
+    public JwTokenVerifier(UserRepository repository, SecretKey secretKey, JwtConfig jwtConfig) {
+        this.repository = repository;
         this.secretKey = secretKey;
         this.jwtConfig = jwtConfig;
     }
@@ -57,7 +61,8 @@ public class JwTokenVerifier extends OncePerRequestFilter {
 
             //email/username
             String username = body.getSubject();
-
+            if (!repository.existsById(username))
+                throw new UserNoLongerExistsOnAuthException(username);
             //authorities and permissions
             var authorization = (List<Map<String, String>>) body.get("authorities");
 

@@ -92,6 +92,8 @@ public class VehicleController {
                     .orElseThrow(() -> new VehicleNotFoundException(licensePlate));
 
             if (vehicleToDelete.getOwner().getEmail().equals(authentication.getName())) {
+                //delete all trips where the trip uses this vehicle
+
                 repository.deleteById(licensePlate);
             } else {
                 throw new VehicleOwnerIncorrectException(authentication.getName(), licensePlate);

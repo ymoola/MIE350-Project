@@ -4,6 +4,7 @@ import com.example.RideShare.auth.ApplicationUserService;
 import com.example.RideShare.jwt.JwTokenVerifier;
 import com.example.RideShare.jwt.JwtConfig;
 import com.example.RideShare.jwt.JwtUsernameAndPasswordAuthenticationFilter;
+import com.example.RideShare.model.repository.UserRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -22,15 +23,17 @@ import javax.crypto.SecretKey;
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
+    private final UserRepository repository;
     private final PasswordEncoder passwordEncoder;
     private final ApplicationUserService applicationUserService;
     private final SecretKey secretKey;
     private final JwtConfig jwtConfig;
 
-    public ApplicationSecurityConfig(PasswordEncoder passwordEncoder,
+    public ApplicationSecurityConfig(UserRepository repository, PasswordEncoder passwordEncoder,
                                      ApplicationUserService applicationUserService,
                                      SecretKey secretKey,
                                      JwtConfig jwtConfig) {
+        this.repository = repository;
         this.passwordEncoder = passwordEncoder;
         this.applicationUserService = applicationUserService;
         this.secretKey = secretKey;
@@ -45,7 +48,7 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
                     .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .addFilter(new JwtUsernameAndPasswordAuthenticationFilter(authenticationManager(), jwtConfig, secretKey))
-                .addFilterAfter(new JwTokenVerifier(secretKey, jwtConfig), JwtUsernameAndPasswordAuthenticationFilter.class)
+                .addFilterAfter(new JwTokenVerifier(repository, secretKey, jwtConfig), JwtUsernameAndPasswordAuthenticationFilter.class)
                 .authorizeRequests()
                 .antMatchers(HttpMethod.POST,"/users/**").permitAll()
                 .anyRequest()
