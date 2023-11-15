@@ -5,8 +5,10 @@ import com.example.RideShare.controller.exceptions.UserNotFoundException;
 import com.example.RideShare.controller.exceptions.VehicleNotFoundException;
 import com.example.RideShare.controller.exceptions.VehicleOwnerIncorrectException;
 import com.example.RideShare.controller.exceptions.VehicleWithLicensePlateAlreadyExistsException;
+import com.example.RideShare.model.entity.Trip;
 import com.example.RideShare.model.entity.User;
 import com.example.RideShare.model.entity.Vehicle;
+import com.example.RideShare.model.repository.TripRepository;
 import com.example.RideShare.model.repository.UserRepository;
 import com.example.RideShare.model.repository.VehicleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +16,7 @@ import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 @CrossOrigin
@@ -25,9 +28,15 @@ public class VehicleController {
     private final VehicleRepository repository;
 
     @Autowired
-    private UserRepository userRepository;
-    public VehicleController(VehicleRepository repository) {
+    private final UserRepository userRepository;
+
+    @Autowired
+    private final TripRepository tripRepository;
+
+    public VehicleController(VehicleRepository repository, UserRepository userRepository, TripRepository  tripRepository) {
         this.repository = repository;
+        this.userRepository = userRepository;
+        this.tripRepository = tripRepository;
     }
 
     @PostMapping
@@ -82,6 +91,7 @@ public class VehicleController {
                 .orElseThrow(() -> new VehicleNotFoundException(licensePlate));
     }
 
+    @Transactional
     @DeleteMapping("/{licensePlate}")
     public void deleteVehicle(Authentication authentication, @PathVariable String licensePlate) {
         if (!repository.existsById(licensePlate))
@@ -93,6 +103,7 @@ public class VehicleController {
 
             if (vehicleToDelete.getOwner().getEmail().equals(authentication.getName())) {
                 //delete all trips where the trip uses this vehicle
+                tripRepository.deleteTripsByDriver(authentication.getName());
 
                 repository.deleteById(licensePlate);
             } else {
