@@ -22,7 +22,7 @@ public class Trip {
 
     @ManyToOne
     @JoinColumn(name = "driverEmail")
-    private User user;
+    private User driver;
 
     // Assuming a relationship with Vehicle
     @OneToOne

@@ -3,13 +3,20 @@ package com.example.RideShare.controller;
 import com.example.RideShare.controller.dto.VehicleDto;
 import com.example.RideShare.controller.exceptions.UserNotFoundException;
 import com.example.RideShare.controller.exceptions.VehicleNotFoundException;
+import com.example.RideShare.controller.exceptions.VehicleOwnerIncorrectException;
+import com.example.RideShare.controller.exceptions.VehicleWithLicensePlateAlreadyExistsException;
+import com.example.RideShare.model.entity.Trip;
 import com.example.RideShare.model.entity.User;
 import com.example.RideShare.model.entity.Vehicle;
+import com.example.RideShare.model.repository.TripRepository;
 import com.example.RideShare.model.repository.UserRepository;
 import com.example.RideShare.model.repository.VehicleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 @CrossOrigin
@@ -21,31 +28,42 @@ public class VehicleController {
     private final VehicleRepository repository;
 
     @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    public VehicleController(VehicleRepository repository) {this.repository = repository;}
+    @Autowired
+    private final TripRepository tripRepository;
 
-    @GetMapping
-    public List<Vehicle> getAllVehicles() {
-        return repository.findAll();
+    public VehicleController(VehicleRepository repository, UserRepository userRepository, TripRepository  tripRepository) {
+        this.repository = repository;
+        this.userRepository = userRepository;
+        this.tripRepository = tripRepository;
     }
 
     @PostMapping
-    public Vehicle createVehicle(@RequestBody VehicleDto vehicleDto){
+    public Vehicle createVehicle(Authentication authentication, @RequestBody VehicleDto vehicleDto){
+        if (repository.existsById(vehicleDto.getLicensePlate()))
+            throw new VehicleWithLicensePlateAlreadyExistsException(vehicleDto.getLicensePlate());
+
         Vehicle newVehicle = new Vehicle();
-        //might have to add notNull checks on these setters
-            //According to my non-rigorous testing it should be fine but I'll leave the comment just in case
         newVehicle.setLicensePlate(vehicleDto.getLicensePlate());
         newVehicle.setMake(vehicleDto.getMake());
         newVehicle.setModel(vehicleDto.getModel());
         newVehicle.setType(vehicleDto.getType());
         newVehicle.setPassengerSeats(vehicleDto.getPassengerSeats());
         newVehicle.setColor(vehicleDto.getColor());
-        User owner = userRepository.findById(vehicleDto.getOwnerEmail()).orElseThrow(
-                () -> new UserNotFoundException(vehicleDto.getOwnerEmail()));
+
+        User owner = userRepository.findById(authentication.getName()).orElseThrow(
+                () -> new UserNotFoundException(authentication.getName()));
         newVehicle.setOwner(owner);
+
         return repository.save(newVehicle);
     }
+
+    @GetMapping
+    public List<Vehicle> getAllVehicles() {
+        return repository.findAll();
+    }
+
 
     @GetMapping("/{licensePlate}")
     public Vehicle getVehicleByLicensePlate(@PathVariable String licensePlate) {
@@ -53,32 +71,47 @@ public class VehicleController {
                 .orElseThrow(() -> new VehicleNotFoundException(licensePlate)); // Custom exception
     }
 
+    @GetMapping("/getOwnerVehicles/{email}")
+    List<Vehicle> getOwnerVehicles(@PathVariable("email") String email){
+        return repository.getOwnerVehicles(email);
+    }
+
     @PutMapping("/{licensePlate}")
+    @PostAuthorize("returnObject.owner.email == authentication.principal")
     public Vehicle updateVehicle(@RequestBody VehicleDto updatedVehicleDto, @PathVariable String licensePlate) {
         return repository.findById(licensePlate)
                 .map(vehicle -> {
-                    //might have to add notNull checks on these setters
-                        //According to my non-rigorous testing it should be fine but I'll leave the comment just in case
                     vehicle.setMake(updatedVehicleDto.getMake());
                     vehicle.setModel(updatedVehicleDto.getModel());
                     vehicle.setType(updatedVehicleDto.getType());
                     vehicle.setPassengerSeats(updatedVehicleDto.getPassengerSeats());
                     vehicle.setColor(updatedVehicleDto.getColor());
-                    User owner = userRepository.findById(updatedVehicleDto.getOwnerEmail()).orElseThrow(
-                            () -> new UserNotFoundException(updatedVehicleDto.getOwnerEmail()));
-                    vehicle.setOwner(owner);
                     return repository.save(vehicle);
                 })
-                .orElseThrow(() -> new VehicleNotFoundException(licensePlate)); // Custom exception
+                .orElseThrow(() -> new VehicleNotFoundException(licensePlate));
     }
 
+    @Transactional
     @DeleteMapping("/{licensePlate}")
-    public void deleteVehicle(@PathVariable String licensePlate) {
-        repository.deleteById(licensePlate);
-    }
+    public void deleteVehicle(Authentication authentication, @PathVariable String licensePlate) {
+        if (!repository.existsById(licensePlate))
+            return;
 
-    @GetMapping("/getOwnerVehicles/{email}")
-    List<Vehicle> getOwnerVehicles(@PathVariable("email") String email){
-        return repository.getOwnerVehicles(email);
+        try {
+            Vehicle vehicleToDelete = repository.findById(licensePlate)
+                    .orElseThrow(() -> new VehicleNotFoundException(licensePlate));
+
+            if (vehicleToDelete.getOwner().getEmail().equals(authentication.getName())) {
+                //delete all trips where the trip uses this vehicle
+                tripRepository.deleteTripsByDriver(authentication.getName());
+
+                repository.deleteById(licensePlate);
+            } else {
+                throw new VehicleOwnerIncorrectException(authentication.getName(), licensePlate);
+            }
+        } catch (VehicleNotFoundException e) {
+            System.out.printf("Failed to find the vehicle to delete, licensePlate=%s%n", licensePlate);
+            throw new VehicleOwnerIncorrectException(authentication.getName(), licensePlate);
+        }
     }
 }

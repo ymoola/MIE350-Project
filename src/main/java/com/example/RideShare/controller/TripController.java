@@ -11,6 +11,7 @@ import com.example.RideShare.model.repository.TripRepository;
 import com.example.RideShare.model.repository.UserRepository;
 import com.example.RideShare.model.repository.VehicleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,6 +28,7 @@ public class TripController {
 
     public TripController(TripRepository repository) {this.repository = repository;}
 
+
     @Autowired
     private VehicleRepository vehicleRepository;
 
@@ -41,7 +43,7 @@ public class TripController {
         newTrip.setTripId(tripDto.getTripId());
         User driver = userRepository.findById(tripDto.getDriverEmail()).orElseThrow(
                 () -> new UserNotFoundException(tripDto.getDriverEmail()));
-        newTrip.setUser(driver);
+        newTrip.setDriver(driver);
         Vehicle vehicle = vehicleRepository.findById(tripDto.getLicensePlate()).orElseThrow(
                 () -> new VehicleNotFoundException(tripDto.getLicensePlate()));
         newTrip.setVehicle(vehicle);
@@ -56,12 +58,14 @@ public class TripController {
 
     // Update Trip
     @PutMapping("/{tripId}")
+    @PostAuthorize("(returnObject.driver.email == authentication.principal) &&" +
+            "(returnObject.vehicle.owner.email == authentication.principal)")
     public Trip updateTrip(@RequestBody TripDto updatedTripDto, @PathVariable Long tripId) {
         return repository.findById(tripId)
                 .map(trip -> {
-                    User driver = userRepository.findById(updatedTripDto.getDriverEmail()).orElseThrow(
-                            () -> new UserNotFoundException(updatedTripDto.getDriverEmail()));
-                    trip.setUser(driver);
+//                    User driver = userRepository.findById(updatedTripDto.getDriverEmail()).orElseThrow(
+//                            () -> new UserNotFoundException(updatedTripDto.getDriverEmail()));
+//                    trip.setDriver(driver);
                     Vehicle vehicle = vehicleRepository.findById(updatedTripDto.getLicensePlate()).orElseThrow(
                             () -> new VehicleNotFoundException(updatedTripDto.getLicensePlate()));
                     trip.setVehicle(vehicle);

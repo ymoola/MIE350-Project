@@ -1,59 +1,144 @@
 package com.example.RideShare.controller;
 
+import com.example.RideShare.controller.dto.DeleteUserConfirmationCredentialsDto;
+import com.example.RideShare.controller.dto.InformationSafeUserDto;
+import com.example.RideShare.controller.dto.UserInformationChangeRequestDto;
+import com.example.RideShare.controller.exceptions.EmailAlreadyTakenException;
+import com.example.RideShare.controller.exceptions.UserInformationChangeException;
 import com.example.RideShare.controller.exceptions.UserNotFoundException;
 import com.example.RideShare.model.entity.User;
+import com.example.RideShare.model.repository.TripRepository;
 import com.example.RideShare.model.repository.UserRepository;
+import com.example.RideShare.model.repository.VehicleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.transaction.Transactional;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @CrossOrigin
 @RestController
 @RequestMapping("/users")
 public class UserController {
+
     @Autowired
     private final UserRepository repository;
 
-    public UserController(UserRepository repository) {this.repository = repository;}
+    @Autowired
+    private final TripRepository tripRepository;
+
+    @Autowired
+    private final VehicleRepository vehicleRepository;
+
+    public UserController(UserRepository repository, TripRepository tripRepository, VehicleRepository vehicleRepository) {
+        this.repository = repository;
+        this.tripRepository = tripRepository;
+        this.vehicleRepository = vehicleRepository;
+    }
 
     @GetMapping
-    List<User> retrieveAllUsers(){return repository.findAll();}
-
+    List<InformationSafeUserDto> retrieveAllUsers(){
+        return repository.findAll()
+                .stream()
+                .map(user -> new InformationSafeUserDto(
+                        user.getEmail(),
+                        user.getPhoneNumber(),
+                        user.getFirstName(),
+                        user.getLastName()
+                )).collect(Collectors.toList());
+    }
 
     @GetMapping("/{email}")
-    User getByEmail(@PathVariable("email") String email){
-        return repository.findById(email)
+    InformationSafeUserDto getByEmail(@PathVariable("email") String email){
+        User user = repository.findById(email)
                 .orElseThrow(
                         ()-> new UserNotFoundException(email)
                 );
+        return new InformationSafeUserDto(
+                user.getEmail(),
+                user.getPhoneNumber(),
+                user.getFirstName(),
+                user.getLastName()
+        );
     }
 
-    //this doesn't need a dto because it has no foreign keys on creation
     @PostMapping
-    User createUser(@RequestBody User newUser){
-        return repository.save(newUser);
+    InformationSafeUserDto createUser(@RequestBody User newUser) throws EmailAlreadyTakenException {
+        String email = newUser.getEmail();
+
+        //possibly validate email later
+
+        if (repository.existsById(email)){
+            throw new EmailAlreadyTakenException(email);
+        }
+
+        User user = repository.save(newUser);
+
+        return new InformationSafeUserDto(
+                user.getEmail(),
+                user.getPhoneNumber(),
+                user.getFirstName(),
+                user.getLastName()
+        );
     }
 
-    //this method allows the user to update their email, password, and everything else
     @PutMapping("/{email}")
-    User updateUser(@RequestBody User updatedUser, @PathVariable("email") String email){
-        return repository.findById(email)
+    @PreAuthorize("(#email == authentication.principal) && " +
+            "(#userInformationChangeRequest.email == authentication.principal)")
+    InformationSafeUserDto updateUser(@RequestBody UserInformationChangeRequestDto userInformationChangeRequest,
+                                      @PathVariable("email") String email){
+        User userAfterUpdate = repository.findById(email)
                 .map(user -> {
-                    user.setEmail(updatedUser.getEmail());
-                    user.setPassword(updatedUser.getPassword());
-                    user.setPhoneNumber(updatedUser.getPhoneNumber());
-                    user.setAddress(updatedUser.getAddress());
-                    user.setPostalCode(updatedUser.getPostalCode());
-                    user.setFirstName(updatedUser.getFirstName());
-                    user.setLastName(updatedUser.getLastName());
+                    //validate user has entered their current password correctly
+                    if (!user.getPassword().equals(userInformationChangeRequest.getCurrentPassword()))
+                        throw new UserInformationChangeException(email);
+
+                    user.setPassword(userInformationChangeRequest.getNewPassword());
+                    user.setPhoneNumber(userInformationChangeRequest.getPhoneNumber());
+                    user.setAddress(userInformationChangeRequest.getAddress());
+                    user.setPostalCode(userInformationChangeRequest.getPostalCode());
+                    user.setFirstName(userInformationChangeRequest.getFirstName());
+                    user.setLastName(userInformationChangeRequest.getLastName());
                     return repository.save(user);
                 })
-                .orElseThrow(() -> new UserNotFoundException(email)); // Custom exception
+                .orElseThrow(() -> new UserNotFoundException(email));
+
+        return new InformationSafeUserDto(
+                userAfterUpdate.getEmail(),
+                userAfterUpdate.getPhoneNumber(),
+                userInformationChangeRequest.getFirstName(),
+                userInformationChangeRequest.getLastName()
+        );
     }
 
-    @GetMapping("/search/{searchString}")
-    List<User> searchByName(@PathVariable("searchString") String searchString){
-        return repository.searchByName(searchString);
+
+    @DeleteMapping("/{email}")
+    @Transactional
+    @PreAuthorize("#email == authentication.principal")
+    public void deleteUser(@RequestBody DeleteUserConfirmationCredentialsDto deleteUserConfirmationCredentials,
+                           @PathVariable("email") String email){
+        //Find the user account to delete
+        User userToDelete = repository.findById(email)
+                .orElseThrow(()-> new UserNotFoundException(email));
+
+        //Validate authority to write changes one more time
+        if (!userToDelete.getPassword().equals(deleteUserConfirmationCredentials.getPassword()))
+            throw new UserInformationChangeException(email);
+
+        //delete all trips where the user is the driver
+        tripRepository.deleteTripsByDriver(email);
+
+        //delete all vehicles owned by this user
+        vehicleRepository.deleteOwnerVehicles(email);
+
+        //remove all instances where the user is a passenger for a trip
+        repository.deleteById(email);
     }
+
+//    @GetMapping("/search/{searchString}")
+//    List<User> searchByName(@PathVariable("searchString") String searchString){
+//        return repository.searchByName(searchString);
+//    }
 }
