@@ -33,13 +33,11 @@ public class TripController {
     private VehicleRepository vehicleRepository;
 
     @GetMapping
-//    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_EMPLOYEE')")
     public List<Trip> getAllTrips() {
         return repository.findAll();
     }
 
     @PostMapping
-//    @PreAuthorize("hasAuthority('')")
     public Trip createTrip(@RequestBody TripDto tripDto) {
         Trip newTrip = new Trip();
         newTrip.setTripId(tripDto.getTripId());
