@@ -3,7 +3,11 @@ package com.example.RideShare.model.entity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import javax.annotation.Nullable;
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @NoArgsConstructor
@@ -29,5 +33,8 @@ public class Trip {
     @JoinColumn(name = "licensePlate")
     private Vehicle vehicle;
 
-    // Additional fields like startLocation, endLocation, dateTime, etc.
+    @OneToMany(mappedBy = "trip")
+    @Nullable
+    private List<Passenger> passengers = new ArrayList<>();
+
 }
