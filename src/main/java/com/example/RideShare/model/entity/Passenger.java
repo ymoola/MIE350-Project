@@ -25,7 +25,7 @@ public class Passenger {
     @MapsId("passengerEmail")
     @JoinColumn(name = "passengerEmail")
     @JsonIgnoreProperties({"passengers"})
-    private User passenger;
+    private User user;
 
     @ManyToOne
     @MapsId("passengerTripId")

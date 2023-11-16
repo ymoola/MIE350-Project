@@ -42,7 +42,7 @@ public class User {
     @NotEmpty
     private String lastName;
 
-    @OneToMany(mappedBy = "passenger")
+    @OneToMany(mappedBy = "user")
     @Nullable
     private List<Passenger> passengers = new ArrayList<>();
 }
