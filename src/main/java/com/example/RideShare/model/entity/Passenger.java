@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotEmpty;
 
 // to store instances where this user is a passenger for a trip.
 
@@ -32,5 +31,4 @@ public class Passenger {
     @JoinColumn(name = "passengerTripId")
     @JsonIgnoreProperties({"passengers"})
     private Trip trip;
-
 }

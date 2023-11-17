@@ -5,9 +5,10 @@ import com.example.RideShare.controller.exceptions.UserNotFoundException;
 import com.example.RideShare.controller.exceptions.VehicleNotFoundException;
 import com.example.RideShare.controller.exceptions.VehicleOwnerIncorrectException;
 import com.example.RideShare.controller.exceptions.VehicleWithLicensePlateAlreadyExistsException;
-import com.example.RideShare.model.entity.Trip;
+
 import com.example.RideShare.model.entity.User;
 import com.example.RideShare.model.entity.Vehicle;
+import com.example.RideShare.model.repository.PassengerRepository;
 import com.example.RideShare.model.repository.TripRepository;
 import com.example.RideShare.model.repository.UserRepository;
 import com.example.RideShare.model.repository.VehicleRepository;
@@ -23,7 +24,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/vehicles")
 public class VehicleController {
-
     @Autowired
     private final VehicleRepository repository;
 
@@ -33,10 +33,17 @@ public class VehicleController {
     @Autowired
     private final TripRepository tripRepository;
 
-    public VehicleController(VehicleRepository repository, UserRepository userRepository, TripRepository  tripRepository) {
+    @Autowired
+    private final PassengerRepository passengerRepository;
+
+    public VehicleController(VehicleRepository repository,
+                             UserRepository userRepository,
+                             TripRepository  tripRepository,
+                             PassengerRepository passengerRepository) {
         this.repository = repository;
         this.userRepository = userRepository;
         this.tripRepository = tripRepository;
+        this.passengerRepository = passengerRepository;
     }
 
     @PostMapping
@@ -102,6 +109,9 @@ public class VehicleController {
                     .orElseThrow(() -> new VehicleNotFoundException(licensePlate));
 
             if (vehicleToDelete.getOwner().getEmail().equals(authentication.getName())) {
+                //delete all passengers where vehicle is used in trip
+                passengerRepository.deleteAllByTripVehicle(licensePlate);
+
                 //delete all trips where the trip uses this vehicle
                 tripRepository.deleteTripsByDriver(authentication.getName());
 
