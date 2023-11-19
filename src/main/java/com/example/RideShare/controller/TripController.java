@@ -54,13 +54,38 @@ public class TripController {
     @PostMapping
     @PostAuthorize("authentication.principal == returnObject.vehicle.owner.email")
     public Trip createTrip(Authentication authentication, @RequestBody TripDto tripDto) {
+        //set driver
         Trip newTrip = new Trip();
         User driver = userRepository.findById(authentication.getName()).orElseThrow(
                 () -> new UserNotFoundException(authentication.getName()));
         newTrip.setDriver(driver);
+
+        //set Vehicle
         Vehicle vehicle = vehicleRepository.findById(tripDto.getLicensePlate()).orElseThrow(
                 () -> new VehicleNotFoundException(tripDto.getLicensePlate()));
         newTrip.setVehicle(vehicle);
+
+        //set the days of weeks the trip is going on for
+        newTrip.setSunday(tripDto.isSunday());
+        newTrip.setMonday(tripDto.isMonday());
+        newTrip.setTuesday(tripDto.isTuesday());
+        newTrip.setWednesday(tripDto.isWednesday());
+        newTrip.setThursday(tripDto.isThursday());
+        newTrip.setFriday(tripDto.isFriday());
+        newTrip.setSaturday(tripDto.isSaturday());
+        
+        //set start date
+        newTrip.setStartDate(tripDto.getStartDate());
+        
+        //set is Recurring
+        newTrip.setRecurring(tripDto.isRecurring());
+
+        //set end date
+        newTrip.setEndDate(tripDto.getEndDate());
+
+        //set pickup time
+        newTrip.setPickupTime(tripDto.getPickupTime());
+        
         return repository.save(newTrip);
     }
 
@@ -80,9 +105,29 @@ public class TripController {
                     Vehicle vehicle = vehicleRepository.findById(updatedTripDto.getLicensePlate()).orElseThrow(
                             () -> new VehicleNotFoundException(updatedTripDto.getLicensePlate()));
                     trip.setVehicle(vehicle);
+                    //set the days of weeks the trip is going on for
+                    trip.setSunday(updatedTripDto.isSunday());
+                    trip.setMonday(updatedTripDto.isMonday());
+                    trip.setTuesday(updatedTripDto.isTuesday());
+                    trip.setWednesday(updatedTripDto.isWednesday());
+                    trip.setThursday(updatedTripDto.isThursday());
+                    trip.setFriday(updatedTripDto.isFriday());
+                    trip.setSaturday(updatedTripDto.isSaturday());
+
+                    //set start date
+                    trip.setStartDate(updatedTripDto.getStartDate());
+
+                    //set is Recurring
+                    trip.setRecurring(updatedTripDto.isRecurring());
+
+                    //set end date
+                    trip.setEndDate(updatedTripDto.getEndDate());
+
+                    //set pickup time
+                    trip.setPickupTime(updatedTripDto.getPickupTime());
                     return repository.save(trip);
                 })
-                .orElseThrow(() -> new TripNotFoundException(tripId)); // Custom exception
+                .orElseThrow(() -> new TripNotFoundException(tripId));
     }
 
     // Delete Trip

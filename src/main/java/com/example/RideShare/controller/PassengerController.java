@@ -1,15 +1,11 @@
 package com.example.RideShare.controller;
 
-
 import com.example.RideShare.controller.exceptions.PassengerNotFoundException;
 import com.example.RideShare.model.entity.Passenger;
 import com.example.RideShare.model.keys.PassengerKey;
 import com.example.RideShare.model.repository.PassengerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -44,6 +40,4 @@ public class PassengerController {
         return repository.findById(new PassengerKey(tripId, passengerEmail))
                 .orElseThrow(() -> new PassengerNotFoundException(tripId, passengerEmail));
     }
-
-
 }
