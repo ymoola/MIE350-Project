@@ -63,6 +63,8 @@ public class Trip {
 
     private String pickupTime;
 
+
+    //think of a way to best store addresses for geocoding (goes for both this entity and the user entities)
 //    @NotEmpty
 //    private String pickupAddress;
 //
