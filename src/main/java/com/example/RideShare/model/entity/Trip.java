@@ -7,6 +7,7 @@ import lombok.Setter;
 
 import javax.annotation.Nullable;
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -64,10 +65,9 @@ public class Trip {
     private String pickupTime;
 
 
-    //think of a way to best store addresses for geocoding (goes for both this entity and the user entities)
-//    @NotEmpty
-//    private String pickupAddress;
-//
-//    @NotEmpty
-//    private String destinationAddress;
+    //There are five fields for the address. The region and country are defaulted to Ontario and Canada respectively,
+    //so they can be ignored everywhere else in the program.
+    //The area code is an optional field since the API doesn't need it
+
+    
 }
