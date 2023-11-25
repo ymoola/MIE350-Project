@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.json.JSONObject;
 
 import javax.annotation.Nullable;
 import javax.persistence.*;
@@ -65,9 +66,34 @@ public class Trip {
     private String pickupTime;
 
 
-    //There are five fields for the address. The region and country are defaulted to Ontario and Canada respectively,
-    //so they can be ignored everywhere else in the program.
     //The area code is an optional field since the API doesn't need it
+    //right now I'm storing the coordinates as individual type-double variables for latitude and longitude
+    //for some reason Spring didn't like it when I tried to have a private JSONObject
+    //The API on the front end might need the coordinates in a different data type (float, double, etc.)
 
-    
+    //number and street name only
+    @NotEmpty
+    private String pickupAddress;
+
+    @NotEmpty
+    private String pickupCity;
+
+    private String pickupAreaCode;
+
+    private double pickupLatitude;
+
+    private double pickupLongitude;
+
+    //number and street name only
+    @NotEmpty
+    private String destinationAddress;
+
+    @NotEmpty
+    private String destinationCity;
+
+    private String destinationAreaCode;
+
+    private double destinationLatitude;
+
+    private double destinationLongitude;
 }
