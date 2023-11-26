@@ -27,7 +27,15 @@ INSERT INTO trips(
                   isRecurring,
                   startDate,
                   endDate,
-                  pickupTime
+                  pickupTime,
+                  pickupAddress,
+                  pickupCity,
+                  pickupLatitude,
+                  pickupLongitude,
+                  destinationAddress,
+                  destinationCity,
+                  destinationLatitude,
+                  destinationLongitude
                 )
             VALUES(
                    'kevinjames@mallcop.com',
@@ -42,7 +50,15 @@ INSERT INTO trips(
                    true,
                    DATE('2023-11-12'),
                    DATE('2023-11-16'),
-                   '8:30:00'
+                   '8:30:00',
+                   '427 Euclid Ave',
+                   'Toronto',
+                   0,
+                   0,
+                   '21 Park Ln Cir',
+                   'Toronto',
+                   0,
+                   0
                   );
 
 -- INSERT INTO trips(driverEmail, licensePlate) VALUES('djkhaled@gmail.com', 'XYZ456');
