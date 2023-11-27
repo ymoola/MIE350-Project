@@ -61,6 +61,59 @@ INSERT INTO trips(
                    0
                   );
 
+--all trips must have starting values associated with the coordinates.
+--the coordinates will update when the trip is updated in any way
+--  (other than adding a passenger depending on how that's implemented)
+--this isn't an issue for normal use since the coordinates are assigned upon creation of a trip
+
+INSERT INTO trips(
+    driverEmail,
+    licensePlate,
+    sunday,
+    monday,
+    tuesday,
+    wednesday,
+    thursday,
+    friday,
+    saturday,
+    isRecurring,
+    startDate,
+    endDate,
+    pickupTime,
+    pickupAddress,
+    pickupCity,
+    pickupLatitude,
+    pickupLongitude,
+    destinationAddress,
+    destinationCity,
+    destinationLatitude,
+    destinationLongitude
+)
+VALUES(
+          'lebron@king.net',
+          'MNO012',
+          false,
+          false,
+          true,
+          false,
+          true,
+          false,
+          false,
+          true,
+          DATE('2023-11-12'),
+          DATE('2023-11-16'),
+          '8:30:00',
+          '122 Big Nickel Rd',
+          'Sudbury',
+          0,
+          0,
+          '1 Bass Pro Mills Dr',
+          'Vaughan',
+          0,
+          0
+      );
+
+
 -- INSERT INTO trips(driverEmail, licensePlate) VALUES('djkhaled@gmail.com', 'XYZ456');
 -- INSERT INTO trips(driverEmail, licensePlate) VALUES('kanye@west.org', 'JKL789');
 -- INSERT INTO trips(driverEmail, licensePlate) VALUES('lebron@king.net', 'MNO012');
