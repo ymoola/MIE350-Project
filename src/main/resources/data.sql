@@ -3,16 +3,124 @@ INSERT INTO users(email, password, firstName, lastName) VALUES('djkhaled@gmail.c
 INSERT INTO users(email, password, firstName, lastName) VALUES('kanye@west.org', 'buyDaEarf123', 'Kanye', 'West');
 INSERT INTO users(email, password, firstName, lastName) VALUES('lebron@king.net', 'Strive4Gr8ness', 'LeBron', 'James');
 INSERT INTO users(email, password, firstName, lastName) VALUES('aubreyg@yahoo.com', 'money4fun', 'Aubrey', 'Graham');
+INSERT INTO users(email, password, firstName, lastName) VALUES('curry@chef.com', 'splash', 'Chef', 'Curry');
+INSERT INTO users(email, password, firstName, lastName) VALUES('tswift@eras.com', 'scootersuckz', 'Taylor', 'Swift');
 
 INSERT INTO vehicles(licensePlate, passengerSeats, ownerEmail) VALUES('ABC123', 5, 'kevinjames@mallcop.com');
 INSERT INTO vehicles(licensePlate, passengerSeats, ownerEmail) VALUES('XYZ456', 7, 'djkhaled@gmail.com');
 INSERT INTO vehicles(licensePlate, passengerSeats, ownerEmail) VALUES('JKL789', 3, 'kanye@west.org');
 INSERT INTO vehicles(licensePlate, passengerSeats, ownerEmail) VALUES('MNO012', 5, 'lebron@king.net');
 INSERT INTO vehicles(licensePlate, passengerSeats, ownerEmail) VALUES('PQR345', 3, 'aubreyg@yahoo.com');
+INSERT INTO vehicles(licensePlate, make, model, type, passengerSeats, color, ownerEmail) VALUES('TS1989', 'Mercedes', 'Maybach S650', 'limo', 4, 'black', 'tswift@eras.com');
 INSERT INTO vehicles(licensePlate, make, model, passengerSeats, ownerEmail) VALUES('JFK63', 'Lincoln', 'Continental', 2, 'kevinjames@mallcop.com');
 
-INSERT INTO trips(tripId, driverEmail, licensePlate) VALUES(1, 'kevinjames@mallcop.com', 'ABC123');
-INSERT INTO trips(tripId, driverEmail, licensePlate) VALUES(2, 'djkhaled@gmail.com', 'XYZ456');
-INSERT INTO trips(tripId, driverEmail, licensePlate) VALUES(3, 'kanye@west.org', 'JKL789');
-INSERT INTO trips(tripId, driverEmail, licensePlate) VALUES(4, 'lebron@king.net', 'MNO012');
-INSERT INTO trips(tripId, driverEmail, licensePlate) VALUES(5, 'aubreyg@yahoo.com', 'PQR345');
+INSERT INTO trips(
+                  driverEmail,
+                  licensePlate,
+                  sunday,
+                  monday,
+                  tuesday,
+                  wednesday,
+                  thursday,
+                  friday,
+                  saturday,
+                  isRecurring,
+                  startDate,
+                  endDate,
+                  pickupTime,
+                  pickupAddress,
+                  pickupCity,
+                  pickupLatitude,
+                  pickupLongitude,
+                  destinationAddress,
+                  destinationCity,
+                  destinationLatitude,
+                  destinationLongitude
+                )
+            VALUES(
+                   'kevinjames@mallcop.com',
+                   'ABC123',
+                   false,
+                   false,
+                   true,
+                   false,
+                   true,
+                   false,
+                   false,
+                   true,
+                   DATE('2023-11-12'),
+                   DATE('2023-11-16'),
+                   '8:30:00',
+                   '427 Euclid Ave',
+                   'Toronto',
+                   0,
+                   0,
+                   '21 Park Ln Cir',
+                   'Toronto',
+                   0,
+                   0
+                  );
+
+--all trips must have starting values associated with the coordinates.
+--the coordinates will update when the trip is updated in any way
+--  (other than adding a passenger depending on how that's implemented)
+--this isn't an issue for normal use since the coordinates are assigned upon creation of a trip
+
+INSERT INTO trips(
+    driverEmail,
+    licensePlate,
+    sunday,
+    monday,
+    tuesday,
+    wednesday,
+    thursday,
+    friday,
+    saturday,
+    isRecurring,
+    startDate,
+    endDate,
+    pickupTime,
+    pickupAddress,
+    pickupCity,
+    pickupLatitude,
+    pickupLongitude,
+    destinationAddress,
+    destinationCity,
+    destinationLatitude,
+    destinationLongitude
+)
+VALUES(
+          'lebron@king.net',
+          'MNO012',
+          false,
+          false,
+          true,
+          false,
+          true,
+          false,
+          false,
+          true,
+          DATE('2023-11-12'),
+          DATE('2023-11-16'),
+          '8:30:00',
+          '122 Big Nickel Rd',
+          'Sudbury',
+          0,
+          0,
+          '1 Bass Pro Mills Dr',
+          'Vaughan',
+          0,
+          0
+      );
+
+
+-- INSERT INTO trips(driverEmail, licensePlate) VALUES('djkhaled@gmail.com', 'XYZ456');
+-- INSERT INTO trips(driverEmail, licensePlate) VALUES('kanye@west.org', 'JKL789');
+-- INSERT INTO trips(driverEmail, licensePlate) VALUES('lebron@king.net', 'MNO012');
+-- INSERT INTO trips(driverEmail, licensePlate) VALUES('aubreyg@yahoo.com', 'PQR345');
+--
+-- INSERT INTO passengers(passengerEmail, passengerTripId) VALUES('aubreyg@yahoo.com', 4);
+-- INSERT INTO passengers(passengerEmail, passengerTripId) VALUES('curry@chef.com', 3);
+-- INSERT INTO passengers(passengerEmail, passengerTripId) VALUES('tswift@eras.com', 2);
+-- INSERT INTO passengers(passengerEmail, passengerTripId) VALUES('kanye@west.org', 2);
+-- INSERT INTO passengers(passengerEmail, passengerTripId) VALUES('djkhaled@gmail.com', 1);

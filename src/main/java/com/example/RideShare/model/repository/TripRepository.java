@@ -12,11 +12,17 @@ import java.util.List;
 @Repository
 public interface TripRepository extends JpaRepository<Trip, Long> {
 
-    @Query(value = "select t.* from users u join trips t on u.email = t.driverEmail where lower(u.firstName) like lower(concat('%', :searchTerm, '%')) or lower(u.lastName) like lower(concat('%', :searchTerm, '%'))", nativeQuery = true)
-    List<Trip> searchByDriver(@Param("searchTerm") String searchTerm);
+    @Query(value = "select t.* " +
+            "from users u join trips t " +
+            "on u.email = t.driverEmail " +
+            "where lower(u.firstName) " +
+            "like lower(concat('%', :searchTerm, '%')) " +
+            "or lower(u.lastName) like lower(concat('%', :searchTerm, '%'))", nativeQuery = true)
+    List<Trip> searchByDriverName(@Param("searchTerm") String searchTerm);
 
     @Query(value = "select * from trips where driverEmail = :email", nativeQuery = true)
-    List<Trip> getDriverTrips(@Param("email") String email);
+    List<Trip> getByDriverEmail(@Param("email") String email);
+
 
     @Modifying
     @Query(value = "delete from trips where driverEmail = :email", nativeQuery = true)

@@ -7,6 +7,7 @@ import com.example.RideShare.controller.exceptions.EmailAlreadyTakenException;
 import com.example.RideShare.controller.exceptions.UserInformationChangeException;
 import com.example.RideShare.controller.exceptions.UserNotFoundException;
 import com.example.RideShare.model.entity.User;
+import com.example.RideShare.model.repository.PassengerRepository;
 import com.example.RideShare.model.repository.TripRepository;
 import com.example.RideShare.model.repository.UserRepository;
 import com.example.RideShare.model.repository.VehicleRepository;
@@ -32,10 +33,17 @@ public class UserController {
     @Autowired
     private final VehicleRepository vehicleRepository;
 
-    public UserController(UserRepository repository, TripRepository tripRepository, VehicleRepository vehicleRepository) {
+    @Autowired
+    private final PassengerRepository passengerRepository;
+
+    public UserController(UserRepository repository,
+                          TripRepository tripRepository,
+                          VehicleRepository vehicleRepository,
+                          PassengerRepository passengerRepository) {
         this.repository = repository;
         this.tripRepository = tripRepository;
         this.vehicleRepository = vehicleRepository;
+        this.passengerRepository = passengerRepository;
     }
 
     @GetMapping
@@ -124,14 +132,21 @@ public class UserController {
                 .orElseThrow(()-> new UserNotFoundException(email));
 
         //Validate authority to write changes one more time
-        if (!userToDelete.getPassword().equals(deleteUserConfirmationCredentials.getPassword()))
+        if (!userToDelete.getPassword().equals(
+                deleteUserConfirmationCredentials.getPassword()
+        ))
             throw new UserInformationChangeException(email);
+        //delete all passenger is in a trip where user is driver
+        passengerRepository.deleteAllByDriverEmail(email);
 
         //delete all trips where the user is the driver
         tripRepository.deleteTripsByDriver(email);
 
         //delete all vehicles owned by this user
         vehicleRepository.deleteOwnerVehicles(email);
+
+        //delete all instances where user is the passenger
+        passengerRepository.deleteAllByEmail(email);
 
         //remove all instances where the user is a passenger for a trip
         repository.deleteById(email);

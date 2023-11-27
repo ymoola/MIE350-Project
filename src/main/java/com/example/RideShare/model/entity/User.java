@@ -7,8 +7,12 @@ import org.springframework.lang.Nullable;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Null;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @NoArgsConstructor
@@ -37,4 +41,8 @@ public class User {
 
     @NotEmpty
     private String lastName;
+
+    @OneToMany(mappedBy = "user")
+    @Nullable
+    private List<Passenger> passengers = new ArrayList<>();
 }
