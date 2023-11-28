@@ -23,7 +23,7 @@ public class Passenger {
     @ManyToOne
     @MapsId("passengerEmail")
     @JoinColumn(name = "passengerEmail")
-    @JsonIgnoreProperties({"passengers"})
+    @JsonIgnoreProperties({"isPassenger"}) //refers to the property of user
     private User user;
 
     @ManyToOne
@@ -31,4 +31,7 @@ public class Passenger {
     @JoinColumn(name = "passengerTripId")
     @JsonIgnoreProperties({"passengers"})
     private Trip trip;
+
+
+
 }

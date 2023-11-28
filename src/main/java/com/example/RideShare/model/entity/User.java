@@ -44,5 +44,6 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     @Nullable
-    private List<Passenger> passengers = new ArrayList<>(); //instances where the use is a passanger
+    private List<Passenger> isPassenger = new ArrayList<>(); //instances where the use is a passanger
+
 }

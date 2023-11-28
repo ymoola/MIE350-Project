@@ -34,8 +34,7 @@ public class Trip {
 
     @OneToMany(mappedBy = "trip")
     @Nullable
-    private List<Passenger> passengers = new ArrayList<>();
-
+    private List<Passenger> passengers = new ArrayList<>(); // this refers to the passangers OF a trip
     private boolean sunday;
 
     private boolean monday;
@@ -96,4 +95,9 @@ public class Trip {
     private double destinationLatitude;
 
     private double destinationLongitude;
+
+    @OneToMany(mappedBy = "trip")
+    @Nullable
+    private List <TripRequest> requestsForTrip = new ArrayList<>();
+    // this list is the requests FOR that trip
 }

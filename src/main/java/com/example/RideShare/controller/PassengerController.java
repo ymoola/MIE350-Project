@@ -40,4 +40,7 @@ public class PassengerController {
         return repository.findById(new PassengerKey(tripId, passengerEmail))
                 .orElseThrow(() -> new PassengerNotFoundException(tripId, passengerEmail));
     }
+
+    //TODO: passanger tries to delete a trip they are signed up for
+
 }

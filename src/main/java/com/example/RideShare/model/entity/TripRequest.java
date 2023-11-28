@@ -1,6 +1,7 @@
 package com.example.RideShare.model.entity;
 
 import com.example.RideShare.model.keys.TripRequestKey;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,9 +14,12 @@ import java.util.Date;
 @NoArgsConstructor
 @Getter
 @Setter
-@Table(name = "tripRequest")
+@Table(name = "tripRequests")
 public class TripRequest {
 
+
+    // if a trip request is accepted it will be deleted
+    // all of the trip requests active are outstanding/havent been accepted
     @EmbeddedId
     TripRequestKey tripRequestKey;
 
@@ -23,16 +27,18 @@ public class TripRequest {
     @MapsId("userEmail")
     @JoinColumn(name = "userEmail")
     @JsonIgnoreProperties({"tripRequests"}) //do we NEED this?
-    private User user;
+    private User user; // whoever makes the request
 
     @ManyToOne
     @MapsId("tripId")
     @JoinColumn(name = "tripId")
-    @JsonIgnoreProperties({"tripRequests"})
+    @JsonIgnoreProperties({"requestsForTrip"})
     private Trip trip;
 
+    @Temporal(TemporalType.DATE)
+    @JsonFormat
+            (shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date dateIssued;
-
     private String message;
 
 }

@@ -121,6 +121,6 @@ VALUES(
 --
 -- INSERT INTO passengers(passengerEmail, passengerTripId) VALUES('aubreyg@yahoo.com', 4);
 -- INSERT INTO passengers(passengerEmail, passengerTripId) VALUES('curry@chef.com', 3);
--- INSERT INTO passengers(passengerEmail, passengerTripId) VALUES('tswift@eras.com', 2);
+INSERT INTO passengers(passengerEmail, passengerTripId) VALUES('tswift@eras.com', 1);
 -- INSERT INTO passengers(passengerEmail, passengerTripId) VALUES('kanye@west.org', 2);
 -- INSERT INTO passengers(passengerEmail, passengerTripId) VALUES('djkhaled@gmail.com', 1);
