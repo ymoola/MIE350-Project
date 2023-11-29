@@ -8,6 +8,7 @@ import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -43,7 +44,8 @@ public class User {
     @JsonIgnoreProperties({"trip"})
     private List<Passenger> isPassengerInstances;
 
-//    @OneToMany(mappedBy = "user")
-//    @Nullable
-//    private List<TripRequest> tripRequestsSent = new ArrayList<>();
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
+    @Nullable
+    @JsonIgnoreProperties({"user"})
+    private List<TripRequest> tripRequestsSent;
 }

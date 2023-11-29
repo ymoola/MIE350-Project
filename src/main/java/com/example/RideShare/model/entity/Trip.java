@@ -102,8 +102,8 @@ public class Trip {
 
     private double destinationLongitude;
 
-//    @OneToMany(mappedBy = "trip")
-//    @Nullable
-//    private List <TripRequest> requestsForTrip = new ArrayList<>();
-    // this list is the requests FOR that trip
+    @OneToMany(mappedBy = "trip", cascade = CascadeType.REMOVE)
+    @Nullable
+    @JsonIgnoreProperties({"trip", "user"})
+    private List <TripRequest> requestsForTrip;
 }

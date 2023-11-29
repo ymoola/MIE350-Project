@@ -6,6 +6,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -22,13 +24,15 @@ public class TripRequest {
     @ManyToOne
     @MapsId("requesterEmail")
     @JoinColumn(name = "requesterEmail")
-    @JsonIgnoreProperties({"tripRequests"})
+    @JsonIgnoreProperties({"tripRequestsSent", "password"})
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private User user;
 
     @ManyToOne
     @MapsId("tripId")
     @JoinColumn(name = "tripId")
     @JsonIgnoreProperties({"requestsForTrip"})
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Trip trip;
 
     @Temporal(TemporalType.DATE)

@@ -91,7 +91,6 @@ public class TripRequestController {
         return repository.save(newRequest);
     }
 
-    // TODO: the email here has to match the authentication
     @PutMapping("/{tripId}/{email}")
     TripRequest updateRequest(@PathVariable long tripId, @PathVariable String email, @RequestBody TripRequestDto tripRequestDto){
         TripRequestKey key = new TripRequestKey(tripId, email);
@@ -103,7 +102,7 @@ public class TripRequestController {
     }
 
 
-    @DeleteMapping("/decline/{tripId}/{email}") //email of the requester
+    @DeleteMapping("/decline/{tripId}/{email}")
     void declineRequest(@PathVariable long tripId, @PathVariable String email){repository.deleteById(new TripRequestKey(tripId,email));}
 
     @DeleteMapping("accept/{tripId}/{userEmail}")
@@ -117,7 +116,7 @@ public class TripRequestController {
         if (trip.getPassengers() != null && trip.getPassengers().size() == capacity) {
             throw new TripFullException(trip.getTripId());
         }
-        //if not full we can accept new passanger
+
         PassengerKey key = new PassengerKey(tripId, userEmail);
 
         User requester = userRepository.findById(userEmail)
@@ -131,11 +130,9 @@ public class TripRequestController {
 
         repository.deleteById(new TripRequestKey(tripId,userEmail));
 
-        //if this was the last passanger, delete all outstanding requests
-        if(trip.getPassengers().size()- capacity == 1){
-            //this means that there was 1 space for the passanger (trip not updated, still like @start)
+        //if this was the last passenger slot
+        if(trip.getPassengers().size()- capacity == 1)
             repository.deleteByTrip(tripId);
-        }
     }
 
 
