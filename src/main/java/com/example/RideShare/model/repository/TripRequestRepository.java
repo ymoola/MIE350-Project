@@ -3,6 +3,7 @@ package com.example.RideShare.model.repository;
 import com.example.RideShare.model.entity.TripRequest;
 import com.example.RideShare.model.keys.TripRequestKey;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -28,4 +29,10 @@ public interface TripRequestRepository extends JpaRepository<TripRequest, TripRe
             "WHERE tr.tripId = t.tripId " +
             "AND driverEmail = :driverEmail", nativeQuery = true)
     List<TripRequest> getByDriver(@Param("driverEmail") String driverEmail);
+
+    @Modifying
+    @Query(value = "DELETE " +
+            "FROM tripRequests tr " +
+            "WHERE tr.tripId = :tripId", nativeQuery = true)
+    void deleteByTrip(@Param("tripId") long tripId);
 }

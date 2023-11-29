@@ -1,16 +1,14 @@
 package com.example.RideShare.controller;
 
 import com.example.RideShare.controller.dto.TripRequestDto;
-import com.example.RideShare.controller.exceptions.TripFullException;
-import com.example.RideShare.controller.exceptions.TripNotFoundException;
-import com.example.RideShare.controller.exceptions.TripRequestNotFoundException;
-import com.example.RideShare.controller.exceptions.UserNotFoundException;
+import com.example.RideShare.controller.exceptions.*;
 import com.example.RideShare.model.entity.Passenger;
 import com.example.RideShare.model.entity.Trip;
 import com.example.RideShare.model.entity.TripRequest;
 import com.example.RideShare.model.entity.User;
 import com.example.RideShare.model.keys.PassengerKey;
 import com.example.RideShare.model.keys.TripRequestKey;
+import com.example.RideShare.model.repository.PassengerRepository;
 import com.example.RideShare.model.repository.TripRepository;
 import com.example.RideShare.model.repository.TripRequestRepository;
 import com.example.RideShare.model.repository.UserRepository;
@@ -34,10 +32,14 @@ public class TripRequestController {
     @Autowired
     private final UserRepository userRepository;
 
-    public TripRequestController(TripRequestRepository repository, TripRepository tripRepository, UserRepository userRepository){
+    @Autowired
+    private final PassengerRepository passengerRepository;
+
+    public TripRequestController(TripRequestRepository repository, TripRepository tripRepository, UserRepository userRepository, PassengerRepository passengerRepository){
         this.repository = repository;
         this.tripRepository = tripRepository;
         this.userRepository = userRepository;
+        this.passengerRepository = passengerRepository;
     }
 
     @GetMapping
@@ -69,6 +71,11 @@ public class TripRequestController {
         Trip trip = tripRepository.findById(tripRequestDto.getTripId()).orElseThrow(
                 () -> new TripNotFoundException(tripRequestDto.getTripId()));
         int capacity = trip.getVehicle().getPassengerSeats();
+
+        PassengerKey passangerKey = new PassengerKey(tripRequestDto.getTripId(), requesterEmail);
+        if (passengerRepository.existsById(passangerKey)){
+          throw new PassangerAlreadyRegisteredException(tripRequestDto.getTripId(), requesterEmail);
+        }
         if (trip.getPassengers() != null && trip.getPassengers().size() == capacity) {
             throw new TripFullException(trip.getTripId());
         }
@@ -101,19 +108,34 @@ public class TripRequestController {
 
     @DeleteMapping("accept/{tripId}/{userEmail}")
     void acceptRequest(@PathVariable long tripId, @PathVariable String userEmail){
+
         Trip trip = tripRepository.findById(tripId)
                 .orElseThrow(() -> new TripNotFoundException(tripId));
 
+        int capacity = trip.getVehicle().getPassengerSeats();
+        //throw exception if already full
+        if (trip.getPassengers() != null && trip.getPassengers().size() == capacity) {
+            throw new TripFullException(trip.getTripId());
+        }
+        //if not full we can accept new passanger
         PassengerKey key = new PassengerKey(tripId, userEmail);
 
         User requester = userRepository.findById(userEmail)
                 .orElseThrow(() -> new UserNotFoundException(userEmail));
 
         Passenger newPassenger = new Passenger();
+        newPassenger.setPassengerKey(key);
         newPassenger.setUser(requester);
         newPassenger.setTrip(trip);
+        passengerRepository.save(newPassenger);
 
         repository.deleteById(new TripRequestKey(tripId,userEmail));
+
+        //if this was the last passanger, delete all outstanding requests
+        if(trip.getPassengers().size()- capacity == 1){
+            //this means that there was 1 space for the passanger (trip not updated, still like @start)
+            repository.deleteByTrip(tripId);
+        }
     }
 
 
