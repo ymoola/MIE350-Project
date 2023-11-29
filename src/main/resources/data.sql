@@ -168,4 +168,6 @@ INSERT INTO passengers(passengerEmail, passengerTripId) VALUES('tswift@eras.com'
 INSERT INTO passengers(passengerEmail, passengerTripId) VALUES('tswift@eras.com', 2);
 INSERT INTO passengers(passengerEmail, passengerTripId) VALUES('kanye@west.org', 2);
 
--- INSERT INTO triprequest() VALUES ()
+INSERT INTO triprequests(requesterEmail, tripId, dateIssued, message) VALUES ('djkhaled@gmail.com', 1, DATE('2023-11-30'), 'DJ KHALED!!!!!');
+INSERT INTO triprequests(requesterEmail, tripId, dateIssued, message) VALUES ('curry@chef.com', 3, DATE('2023-11-23'), '4 RINGS!!!!');
+INSERT INTO triprequests(requesterEmail, tripId, dateIssued, message) VALUES ('aubreyg@yahoo.com', 2, DATE('2023-11-20'), '21 can you do sumthin for me :3 UwU');

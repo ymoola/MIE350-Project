@@ -24,6 +24,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/triprequests")
 public class TripRequestController {
+
     @Autowired
     private final TripRequestRepository repository;
 
@@ -46,19 +47,19 @@ public class TripRequestController {
 
     //search by trip
     @GetMapping("/byTrip/{tripId}")
-    List<TripRequest> getRequestsForTrip(@PathVariable long tripId) {
+    List<TripRequest> getByTrip(@PathVariable long tripId) {
         return repository.getByTrip(tripId);
     }
 
     // get by user (requester) --> TODO: needs authorization
     @GetMapping("/byRequester/{email}")
-    List<TripRequest> getRequestsForRequester(@PathVariable String email) {
+    List<TripRequest> getByRequester(@PathVariable String email) {
         return repository.getByUser(email);
     }
 
     //by driver
     @GetMapping("/byDriver/{email}")
-    List<TripRequest> getRequestsForDriver(@PathVariable String email) {return repository.getByDriver(email); }
+    List<TripRequest> getByTripDriver(@PathVariable String email) {return repository.getByDriver(email); }
     @PostMapping //defaults to the path above TODO: finish the post mapping
     TripRequest makeTripRequest(Authentication authentication, @RequestBody TripRequestDto tripRequestDto) {
         String requesterEmail = authentication.getName();

@@ -11,26 +11,21 @@ import java.util.List;
 public interface TripRequestRepository extends JpaRepository<TripRequest, TripRequestKey> {
 
     // search requests by trip
-    @Query(value= "SELECT *" +
-            "FROM tripRequests tr" +
+    @Query(value= "SELECT * " +
+            "FROM tripRequests tr " +
             "WHERE tr.tripId = :tripId", nativeQuery = true)
     List<TripRequest> getByTrip(@Param("tripId") long tripId);
 
     // search requests by passanger/request maker
-    @Query(value="SELECT *" +
-            "FROM tripRequests tr" +
-            "WHERE tr.userEmail = :userEmail", nativeQuery = true)
-    List<TripRequest> getByUser(@Param("userEmail") String userEmail);
+    @Query(value="SELECT * " +
+            "FROM tripRequests tr " +
+            "WHERE tr.requesterEmail = :email", nativeQuery = true)
+    List<TripRequest> getByUser(@Param("email") String email);
 
     // search requests by driver - see all requests for a certain driver
     @Query(value = "SELECT *" +
-            "FROM tripRequests tr join trip t" +
-            "WHERE tr.tripId = t.tripId" +
-            "AND driverEmail = :driverEmailSearch", nativeQuery = true)
-    List<TripRequest> getByDriver(@Param("driverEmailSearch") String driverEmail);
-
-    // delete requests
-
-
-
+            "FROM tripRequests tr join trips t " +
+            "WHERE tr.tripId = t.tripId " +
+            "AND driverEmail = :driverEmail", nativeQuery = true)
+    List<TripRequest> getByDriver(@Param("driverEmail") String driverEmail);
 }
