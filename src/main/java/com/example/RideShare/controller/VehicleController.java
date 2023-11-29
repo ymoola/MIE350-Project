@@ -5,7 +5,6 @@ import com.example.RideShare.controller.exceptions.UserNotFoundException;
 import com.example.RideShare.controller.exceptions.VehicleNotFoundException;
 import com.example.RideShare.controller.exceptions.VehicleOwnerIncorrectException;
 import com.example.RideShare.controller.exceptions.VehicleWithLicensePlateAlreadyExistsException;
-
 import com.example.RideShare.model.entity.User;
 import com.example.RideShare.model.entity.Vehicle;
 import com.example.RideShare.model.repository.PassengerRepository;
@@ -98,30 +97,18 @@ public class VehicleController {
                 .orElseThrow(() -> new VehicleNotFoundException(licensePlate));
     }
 
-    @Transactional
     @DeleteMapping("/{licensePlate}")
     public void deleteVehicle(Authentication authentication, @PathVariable String licensePlate) {
+
         if (!repository.existsById(licensePlate))
             return;
 
-        try {
-            Vehicle vehicleToDelete = repository.findById(licensePlate)
-                    .orElseThrow(() -> new VehicleNotFoundException(licensePlate));
+        Vehicle vehicle = repository.findById(licensePlate)
+                        .orElseThrow(()-> new VehicleNotFoundException(licensePlate));
 
-            if (vehicleToDelete.getOwner().getEmail().equals(authentication.getName())) {
-                //delete all passengers where vehicle is used in trip
-                passengerRepository.deleteAllByTripVehicle(licensePlate);
-
-                //delete all trips where the trip uses this vehicle
-                tripRepository.deleteTripsByDriver(authentication.getName());
-
-                repository.deleteById(licensePlate);
-            } else {
-                throw new VehicleOwnerIncorrectException(authentication.getName(), licensePlate);
-            }
-        } catch (VehicleNotFoundException e) {
-            System.out.printf("Failed to find the vehicle to delete, licensePlate=%s%n", licensePlate);
+        if (!vehicle.getOwner().getEmail().equals(authentication.getName()))
             throw new VehicleOwnerIncorrectException(authentication.getName(), licensePlate);
-        }
+
+        repository.deleteById(licensePlate);
     }
 }

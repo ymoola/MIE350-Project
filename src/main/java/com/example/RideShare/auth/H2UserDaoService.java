@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static com.example.RideShare.security.ApplicationUserRole.*;
+import static com.example.RideShare.security.ApplicationUserRole.ADMIN;
 
 @Repository("H2")
 public class H2UserDaoService implements ApplicationUserDao {
