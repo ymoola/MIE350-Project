@@ -6,13 +6,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.lang.Nullable;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Null;
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -43,7 +38,7 @@ public class User {
     @NotEmpty
     private String lastName;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
     @Nullable
     @JsonIgnoreProperties({"trip"})
     private List<Passenger> isPassengerInstances;

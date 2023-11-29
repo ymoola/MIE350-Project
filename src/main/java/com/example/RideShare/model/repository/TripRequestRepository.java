@@ -3,7 +3,6 @@ package com.example.RideShare.model.repository;
 import com.example.RideShare.model.entity.TripRequest;
 import com.example.RideShare.model.keys.TripRequestKey;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 

@@ -3,10 +3,7 @@ package com.example.RideShare.controller.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.format.annotation.DateTimeFormat;
 
-import javax.annotation.Nullable;
-import javax.validation.constraints.NotEmpty;
 import java.util.Date;
 
 //copy paste field for testing

@@ -1,7 +1,6 @@
 package com.example.RideShare.model.keys;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.Column;
