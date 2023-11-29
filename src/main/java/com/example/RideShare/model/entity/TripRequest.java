@@ -16,18 +16,14 @@ import java.util.Date;
 @Setter
 @Table(name = "tripRequests")
 public class TripRequest {
-
-
-    // if a trip request is accepted it will be deleted
-    // all of the trip requests active are outstanding/havent been accepted
     @EmbeddedId
     TripRequestKey tripRequestKey;
 
     @ManyToOne
-    @MapsId("userEmail")
-    @JoinColumn(name = "userEmail")
-    @JsonIgnoreProperties({"tripRequests"}) //do we NEED this?
-    private User user; // whoever makes the request
+    @MapsId("requesterEmail")
+    @JoinColumn(name = "requesterEmail")
+    @JsonIgnoreProperties({"tripRequests"})
+    private User user;
 
     @ManyToOne
     @MapsId("tripId")

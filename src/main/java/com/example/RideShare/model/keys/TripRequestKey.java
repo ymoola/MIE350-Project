@@ -12,24 +12,24 @@ import java.io.Serializable;
 @Setter
 public class TripRequestKey implements Serializable {
 
-    @Column(name= "tripId") // the trip's id not tripRequest
+    @Column(name= "tripId")
     Long tripId;
 
-    @Column(name = "userEmail") // define the column in SQL??
-    String userEmail;
+    @Column(name = "requesterEmail")
+    String requesterEmail;
 
     @Override
     public int hashCode() {
         String concatString = String.valueOf(tripId.hashCode()) +
-                String.valueOf(userEmail.hashCode());
+                String.valueOf(requesterEmail.hashCode());
         return concatString.hashCode();
     }
 
     public TripRequestKey() {}
 
-    public TripRequestKey(Long newTripId, String newUserEmail){
+    public TripRequestKey(Long newTripId, String email){
         this.setTripId(newTripId);
-        this.setUserEmail(newUserEmail);
+        this.setRequesterEmail(email);
     }
 
     @Override
@@ -43,6 +43,6 @@ public class TripRequestKey implements Serializable {
             return false;
         TripRequestKey other = (TripRequestKey) o;
         return tripId.equals(other.tripId) &&
-                userEmail.equals(other.userEmail);
+                requesterEmail.equals(other.getRequesterEmail());
     }
 }

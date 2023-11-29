@@ -24,7 +24,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/triprequests")
 public class TripRequestController {
-
     @Autowired
     private final TripRequestRepository repository;
 
@@ -34,21 +33,28 @@ public class TripRequestController {
     @Autowired
     private final UserRepository userRepository;
 
-    public TripRequestController(TripRequestRepository repository, TripRepository tripRepository, UserRepository userRepository){ this.repository = repository;
+    public TripRequestController(TripRequestRepository repository, TripRepository tripRepository, UserRepository userRepository){
+        this.repository = repository;
         this.tripRepository = tripRepository;
         this.userRepository = userRepository;
     }
 
     @GetMapping
-    List<TripRequest> getAllRequests() { return repository.findAll(); }
+    List<TripRequest> getAllRequests() {
+        return repository.findAll();
+    }
 
     //search by trip
     @GetMapping("/byTrip/{tripId}")
-    List<TripRequest> getRequestsForTrip(@PathVariable long tripId) {return repository.getByTrip(tripId); }
+    List<TripRequest> getRequestsForTrip(@PathVariable long tripId) {
+        return repository.getByTrip(tripId);
+    }
 
     // get by user (requester) --> TODO: needs authorization
     @GetMapping("/byRequester/{email}")
-    List<TripRequest> getRequestsForRequester(@PathVariable String email) {return repository.getByUser(email); }
+    List<TripRequest> getRequestsForRequester(@PathVariable String email) {
+        return repository.getByUser(email);
+    }
 
     //by driver
     @GetMapping("/byDriver/{email}")
@@ -62,7 +68,7 @@ public class TripRequestController {
         Trip trip = tripRepository.findById(tripRequestDto.getTripId()).orElseThrow(
                 () -> new TripNotFoundException(tripRequestDto.getTripId()));
         int capacity = trip.getVehicle().getPassengerSeats();
-        if (trip.getPassengers().size() == capacity) {
+        if (trip.getPassengers() != null && trip.getPassengers().size() == capacity) {
             throw new TripFullException(trip.getTripId());
         }
 

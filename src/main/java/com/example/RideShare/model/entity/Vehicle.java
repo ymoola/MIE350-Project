@@ -1,5 +1,6 @@
 package com.example.RideShare.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -38,5 +39,6 @@ public class Vehicle {
 
     @ManyToOne
     @JoinColumn(name = "ownerEmail")
+    @JsonIgnoreProperties({"password", "isPassengerInstances"})
     private User owner;
 }

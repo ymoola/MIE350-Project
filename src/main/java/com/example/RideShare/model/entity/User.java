@@ -1,5 +1,6 @@
 package com.example.RideShare.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -44,6 +45,10 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     @Nullable
-    private List<Passenger> isPassenger = new ArrayList<>(); //instances where the use is a passanger
+    @JsonIgnoreProperties({"trip"})
+    private List<Passenger> isPassengerInstances;
 
+//    @OneToMany(mappedBy = "user")
+//    @Nullable
+//    private List<TripRequest> tripRequestsSent = new ArrayList<>();
 }

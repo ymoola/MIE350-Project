@@ -1,6 +1,7 @@
 package com.example.RideShare.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -24,17 +25,22 @@ public class Trip {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long tripId;
 
+
     @ManyToOne
     @JoinColumn(name = "driverEmail")
+    @JsonIgnoreProperties({"password", "isPassengerInstances"})
     private User driver;
 
     @OneToOne
     @JoinColumn(name = "licensePlate")
+    @JsonIgnoreProperties({"owner"})
     private Vehicle vehicle;
 
     @OneToMany(mappedBy = "trip")
+    @JsonIgnoreProperties({"user", "trip"})
     @Nullable
-    private List<Passenger> passengers = new ArrayList<>(); // this refers to the passangers OF a trip
+    private List<Passenger> passengers;
+
     private boolean sunday;
 
     private boolean monday;
@@ -96,8 +102,8 @@ public class Trip {
 
     private double destinationLongitude;
 
-    @OneToMany(mappedBy = "trip")
-    @Nullable
-    private List <TripRequest> requestsForTrip = new ArrayList<>();
+//    @OneToMany(mappedBy = "trip")
+//    @Nullable
+//    private List <TripRequest> requestsForTrip = new ArrayList<>();
     // this list is the requests FOR that trip
 }

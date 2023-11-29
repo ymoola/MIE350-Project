@@ -7,9 +7,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
-
-// to store instances where this user is a passenger for a trip.
-
 @Entity
 @NoArgsConstructor
 @Getter
@@ -23,7 +20,7 @@ public class Passenger {
     @ManyToOne
     @MapsId("passengerEmail")
     @JoinColumn(name = "passengerEmail")
-    @JsonIgnoreProperties({"isPassenger"}) //refers to the property of user
+    @JsonIgnoreProperties({"isPassengerInstances", "password"})
     private User user;
 
     @ManyToOne
