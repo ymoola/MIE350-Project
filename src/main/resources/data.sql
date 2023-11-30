@@ -53,12 +53,12 @@ INSERT INTO trips(
                    '8:30:00',
                    '427 Euclid Ave',
                    'Toronto',
-                   0,
-                   0,
+                   43.65681,
+                   -79.41160,
                    '21 Park Ln Cir',
                    'Toronto',
-                   0,
-                   0
+                   43.73466,
+                   -79.37427
                   );
 
 --all trips must have starting values associated with the coordinates.
@@ -105,12 +105,12 @@ VALUES(
           '8:30:00',
           '122 Big Nickel Rd',
           'Sudbury',
-          0,
-          0,
+          46.47402,
+          -81.03401,
           '1 Bass Pro Mills Dr',
           'Vaughan',
-          0,
-          0
+          43.82572,
+          -79.53817
       );
 
 INSERT INTO trips(
@@ -152,12 +152,12 @@ VALUES(
           '9:00:00',
           '55 St George St',
           'Toronto',
-          0,
-          0,
+          43.66083,
+          -79.39659,
           '900 Dufferin St',
           'Toronto',
-          0,
-          0
+          43.65629,
+          -79.43516
       );
 -- INSERT INTO trips(driverEmail, licensePlate) VALUES('djkhaled@gmail.com', 'XYZ456');
 -- INSERT INTO trips(driverEmail, licensePlate) VALUES('kanye@west.org', 'JKL789');

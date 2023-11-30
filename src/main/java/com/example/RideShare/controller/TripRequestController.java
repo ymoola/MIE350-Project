@@ -13,6 +13,7 @@ import com.example.RideShare.model.repository.TripRepository;
 import com.example.RideShare.model.repository.TripRequestRepository;
 import com.example.RideShare.model.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -53,7 +54,6 @@ public class TripRequestController {
         return repository.getByTrip(tripId);
     }
 
-    // get by user (requester) --> TODO: needs authorization
     @GetMapping("/byRequester/{email}")
     List<TripRequest> getByRequester(@PathVariable String email) {
         return repository.getByUser(email);
@@ -62,7 +62,8 @@ public class TripRequestController {
     //by driver
     @GetMapping("/byDriver/{email}")
     List<TripRequest> getByTripDriver(@PathVariable String email) {return repository.getByDriver(email); }
-    @PostMapping //defaults to the path above TODO: finish the post mapping
+
+    @PostMapping
     TripRequest makeTripRequest(Authentication authentication, @RequestBody TripRequestDto tripRequestDto) {
         String requesterEmail = authentication.getName();
         User user = userRepository.findById(requesterEmail)
@@ -92,7 +93,8 @@ public class TripRequestController {
     }
 
     @PutMapping("/{tripId}/{email}")
-    TripRequest updateRequest(@PathVariable long tripId, @PathVariable String email, @RequestBody TripRequestDto tripRequestDto){
+    @PreAuthorize("authentication.principal == #email")
+    TripRequest updateRequest(@PathVariable("tripId") long tripId, @PathVariable("email") String email, @RequestBody TripRequestDto tripRequestDto){
         TripRequestKey key = new TripRequestKey(tripId, email);
         TripRequest tripRequest = repository.findById(key)
                 .orElseThrow(() -> new TripRequestNotFoundException(tripId, email));
@@ -103,13 +105,23 @@ public class TripRequestController {
 
 
     @DeleteMapping("/decline/{tripId}/{email}")
-    void declineRequest(@PathVariable long tripId, @PathVariable String email){repository.deleteById(new TripRequestKey(tripId,email));}
+    void declineRequest(Authentication authentication, @PathVariable long tripId, @PathVariable String email){
+        Trip trip = tripRepository.findById(tripId)
+                        .orElseThrow(()->new TripNotFoundException(tripId));
+
+        if (!trip.getDriver().getEmail().equals(authentication.getName()) && !email.equals(authentication.getName()))
+            throw new TripRequestDecisionUnauthorizedException(tripId, email);
+
+        repository.deleteById(new TripRequestKey(tripId,email));
+    }
 
     @DeleteMapping("accept/{tripId}/{userEmail}")
-    void acceptRequest(@PathVariable long tripId, @PathVariable String userEmail){
-
+    void acceptRequest(Authentication authentication, @PathVariable long tripId, @PathVariable String email){
         Trip trip = tripRepository.findById(tripId)
                 .orElseThrow(() -> new TripNotFoundException(tripId));
+
+        if (!trip.getDriver().getEmail().equals(authentication.getName()))
+            throw new TripRequestDecisionUnauthorizedException(tripId, email);
 
         int capacity = trip.getVehicle().getPassengerSeats();
         //throw exception if already full
@@ -117,10 +129,10 @@ public class TripRequestController {
             throw new TripFullException(trip.getTripId());
         }
 
-        PassengerKey key = new PassengerKey(tripId, userEmail);
+        PassengerKey key = new PassengerKey(tripId, email);
 
-        User requester = userRepository.findById(userEmail)
-                .orElseThrow(() -> new UserNotFoundException(userEmail));
+        User requester = userRepository.findById(email)
+                .orElseThrow(() -> new UserNotFoundException(email));
 
         Passenger newPassenger = new Passenger();
         newPassenger.setPassengerKey(key);
@@ -128,13 +140,10 @@ public class TripRequestController {
         newPassenger.setTrip(trip);
         passengerRepository.save(newPassenger);
 
-        repository.deleteById(new TripRequestKey(tripId,userEmail));
+        repository.deleteById(new TripRequestKey(tripId, email));
 
         //if this was the last passenger slot
         if(trip.getPassengers().size()- capacity == 1)
             repository.deleteByTrip(tripId);
     }
-
-
-
 }
