@@ -83,14 +83,18 @@ public class VehicleController {
     }
 
     @PutMapping("/{licensePlate}")
-    @PostAuthorize("returnObject.owner.email == authentication.principal")
-    public Vehicle updateVehicle(@RequestBody VehicleDto updatedVehicleDto, @PathVariable String licensePlate) {
+    public Vehicle updateVehicle(Authentication authentication, @RequestBody VehicleDto updatedVehicleDto, @PathVariable String licensePlate) {
         return repository.findById(licensePlate)
                 .map(vehicle -> {
+                    if (!vehicle.getOwner().getEmail().equals(authentication.getName()))
+                        throw new VehicleOwnerIncorrectException(authentication.getName(), licensePlate);
+
                     vehicle.setMake(updatedVehicleDto.getMake());
                     vehicle.setModel(updatedVehicleDto.getModel());
                     vehicle.setType(updatedVehicleDto.getType());
-                    vehicle.setPassengerSeats(updatedVehicleDto.getPassengerSeats());
+                    if (updatedVehicleDto.getPassengerSeats() > 0) {
+                        vehicle.setPassengerSeats(updatedVehicleDto.getPassengerSeats());
+                    }
                     vehicle.setColor(updatedVehicleDto.getColor());
                     return repository.save(vehicle);
                 })
