@@ -5,11 +5,10 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
-
-// to store instances where this user is a passenger for a trip.
-
 @Entity
 @NoArgsConstructor
 @Getter
@@ -23,12 +22,14 @@ public class Passenger {
     @ManyToOne
     @MapsId("passengerEmail")
     @JoinColumn(name = "passengerEmail")
-    @JsonIgnoreProperties({"passengers"})
+    @JsonIgnoreProperties({"isPassengerInstances", "password"})
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private User user;
 
     @ManyToOne
     @MapsId("passengerTripId")
     @JoinColumn(name = "passengerTripId")
     @JsonIgnoreProperties({"passengers"})
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Trip trip;
 }

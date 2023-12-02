@@ -1,8 +1,11 @@
 package com.example.RideShare.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
@@ -38,5 +41,7 @@ public class Vehicle {
 
     @ManyToOne
     @JoinColumn(name = "ownerEmail")
+    @JsonIgnoreProperties({"password", "isPassengerInstances"})
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private User owner;
 }

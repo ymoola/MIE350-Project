@@ -5,11 +5,9 @@ import com.example.RideShare.controller.exceptions.TripNotFoundException;
 import com.example.RideShare.controller.exceptions.TripWriteUnauthorizedException;
 import com.example.RideShare.controller.exceptions.UserNotFoundException;
 import com.example.RideShare.controller.exceptions.VehicleNotFoundException;
-import com.example.RideShare.geocoding.Geocoder;
 import com.example.RideShare.model.entity.Trip;
 import com.example.RideShare.model.entity.User;
 import com.example.RideShare.model.entity.Vehicle;
-import com.example.RideShare.model.repository.PassengerRepository;
 import com.example.RideShare.model.repository.TripRepository;
 import com.example.RideShare.model.repository.UserRepository;
 import com.example.RideShare.model.repository.VehicleRepository;
@@ -19,7 +17,6 @@ import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import javax.transaction.Transactional;
 import java.io.IOException;
 import java.util.List;
 
@@ -44,17 +41,12 @@ public class TripController {
     @Autowired
     private final VehicleRepository vehicleRepository;
 
-    @Autowired
-    private final PassengerRepository passengerRepository;
-
     public TripController(TripRepository repository,
                           UserRepository userRepository,
-                          VehicleRepository vehicleRepository,
-                          PassengerRepository passengerRepository) {
+                          VehicleRepository vehicleRepository) {
         this.repository = repository;
         this.userRepository = userRepository;
         this.vehicleRepository = vehicleRepository;
-        this.passengerRepository = passengerRepository;
     }
 
     @GetMapping
@@ -108,9 +100,7 @@ public class TripController {
                 coords = GeocodeSync(tripDto.getPickupAddress()
                         + " " + tripDto.getPickupCity() + " " + region + " " + country
                         + " " + tripDto.getPickupAreaCode());
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            } catch (InterruptedException e) {
+            } catch (IOException | InterruptedException e) {
                 throw new RuntimeException(e);
             }
         }
@@ -118,9 +108,7 @@ public class TripController {
             try {
                 coords = GeocodeSync(tripDto.getPickupAddress()
                         + " " + tripDto.getPickupCity() + " " + region + " " + country);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            } catch (InterruptedException e) {
+            } catch (IOException | InterruptedException e) {
                 throw new RuntimeException(e);
             }
         }
@@ -138,9 +126,7 @@ public class TripController {
                 coords = GeocodeSync(tripDto.getDestinationAddress()
                         + " " + tripDto.getDestinationCity() + " " + region + " " + country
                         + " " + tripDto.getDestinationAreaCode());
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            } catch (InterruptedException e) {
+            } catch (IOException | InterruptedException e) {
                 throw new RuntimeException(e);
             }
         }
@@ -148,9 +134,7 @@ public class TripController {
             try {
                 coords = GeocodeSync(tripDto.getDestinationAddress()
                         + " " + tripDto.getDestinationCity() + " " + region + " " + country);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            } catch (InterruptedException e) {
+            } catch (IOException | InterruptedException e) {
                 throw new RuntimeException(e);
             }
         }
@@ -208,9 +192,7 @@ public class TripController {
                             coords = GeocodeSync(updatedTripDto.getPickupAddress()
                             + " " + updatedTripDto.getPickupCity() + " " + region + " " + country
                             + " " + updatedTripDto.getPickupAreaCode());
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        } catch (InterruptedException e) {
+                        } catch (IOException | InterruptedException e) {
                             throw new RuntimeException(e);
                         }
                     }
@@ -218,9 +200,7 @@ public class TripController {
                         try {
                             coords = GeocodeSync(updatedTripDto.getPickupAddress()
                                     + " " + updatedTripDto.getPickupCity() + " " + region + " " + country);
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        } catch (InterruptedException e) {
+                        } catch (IOException | InterruptedException e) {
                             throw new RuntimeException(e);
                         }
                     }
@@ -232,15 +212,11 @@ public class TripController {
                     trip.setDestinationCity(updatedTripDto.getDestinationCity());
                     trip.setDestinationAreaCode(updatedTripDto.getDestinationAreaCode());
                     if(updatedTripDto.getDestinationAreaCode() != null){
-                        //spring made me put this try catch in, it should never catch as long as
-                        //there aren't any abnormalities in the address fields
                         try {
                             coords = GeocodeSync(updatedTripDto.getDestinationAddress()
                                     + " " + updatedTripDto.getDestinationCity() + " " + region + " " + country
                                     + " " + updatedTripDto.getDestinationAreaCode());
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        } catch (InterruptedException e) {
+                        } catch (IOException | InterruptedException e) {
                             throw new RuntimeException(e);
                         }
                     }
@@ -248,9 +224,7 @@ public class TripController {
                         try {
                             coords = GeocodeSync(updatedTripDto.getDestinationAddress()
                                     + " " + updatedTripDto.getDestinationCity() + " " + region + " " + country);
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        } catch (InterruptedException e) {
+                        } catch (IOException | InterruptedException e) {
                             throw new RuntimeException(e);
                         }
                     }
@@ -264,16 +238,12 @@ public class TripController {
 
     // Delete Trip
     @DeleteMapping("/{tripId}")
-    @Transactional
     public void deleteTrip(Authentication authentication, @PathVariable Long tripId) {
         Trip tripToDelete = repository.findById(tripId)
                 .orElseThrow(()-> new TripNotFoundException(tripId));
 
         if (!tripToDelete.getDriver().getEmail().equals(authentication.getName()))
             throw new TripWriteUnauthorizedException(tripId);
-
-        //delete every passenger instance that had this trip as a foreign key
-        passengerRepository.deleteAllByTripId(tripId);
 
         repository.deleteById(tripId);
     }
