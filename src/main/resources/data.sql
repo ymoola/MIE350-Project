@@ -9,7 +9,7 @@ INSERT INTO users(email, password, firstName, lastName) VALUES('tswift@eras.com'
 INSERT INTO vehicles(licensePlate, passengerSeats, ownerEmail) VALUES('ABC123', 5, 'kevinjames@mallcop.com');
 INSERT INTO vehicles(licensePlate, passengerSeats, ownerEmail) VALUES('XYZ456', 7, 'djkhaled@gmail.com');
 INSERT INTO vehicles(licensePlate, passengerSeats, ownerEmail) VALUES('JKL789', 3, 'kanye@west.org');
-INSERT INTO vehicles(licensePlate, passengerSeats, ownerEmail) VALUES('MNO012', 5, 'lebron@king.net');
+INSERT INTO vehicles(licensePlate, passengerSeats, ownerEmail) VALUES('MNO012', 3, 'lebron@king.net');
 INSERT INTO vehicles(licensePlate, passengerSeats, ownerEmail) VALUES('PQR345', 3, 'aubreyg@yahoo.com');
 INSERT INTO vehicles(licensePlate, make, model, type, passengerSeats, color, ownerEmail) VALUES('TS1989', 'Mercedes', 'Maybach S650', 'limo', 4, 'black', 'tswift@eras.com');
 INSERT INTO vehicles(licensePlate, make, model, passengerSeats, ownerEmail) VALUES('JFK63', 'Lincoln', 'Continental', 2, 'kevinjames@mallcop.com');
@@ -164,10 +164,15 @@ VALUES(
 
 -- INSERT INTO passengers(passengerEmail, passengerTripId) VALUES('aubreyg@yahoo.com', 2);
 INSERT INTO passengers(passengerEmail, passengerTripId) VALUES('kevinjames@mallcop.com', 3);
+INSERT INTO passengers(passengerEmail, passengerTripId) VALUES('kanye@west.org', 3);
+INSERT INTO passengers(passengerEmail, passengerTripId) VALUES('lebron@king.net', 3);
+INSERT INTO passengers(passengerEmail, passengerTripId) VALUES('djkhaled@gmail.com', 3);
 INSERT INTO passengers(passengerEmail, passengerTripId) VALUES('tswift@eras.com', 1);
 INSERT INTO passengers(passengerEmail, passengerTripId) VALUES('tswift@eras.com', 2);
 INSERT INTO passengers(passengerEmail, passengerTripId) VALUES('kanye@west.org', 2);
 
+INSERT INTO triprequests(requesterEmail, tripId, dateIssued, message) VALUES ('tswift@eras.com', 1, DATE('2023-12-11'), 'Something something, you belong with me, etc etc');
 INSERT INTO triprequests(requesterEmail, tripId, dateIssued, message) VALUES ('djkhaled@gmail.com', 1, DATE('2023-11-30'), 'DJ KHALED!!!!!');
 INSERT INTO triprequests(requesterEmail, tripId, dateIssued, message) VALUES ('curry@chef.com', 3, DATE('2023-11-23'), '4 RINGS!!!!');
 INSERT INTO triprequests(requesterEmail, tripId, dateIssued, message) VALUES ('aubreyg@yahoo.com', 2, DATE('2023-11-20'), '21 can you do sumthin for me :3 UwU');
+INSERT INTO triprequests(requesterEmail, tripId, dateIssued, message) VALUES ('kevinjames@mallcop.com', 2, DATE('2023-11-24'), 'PLEASE LET ME IN');
