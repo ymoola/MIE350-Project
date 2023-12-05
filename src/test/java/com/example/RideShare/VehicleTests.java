@@ -31,7 +31,7 @@ public class VehicleTests {
     private VehicleRepository vehicleRepository;
 
     @Test
-    void addVehicle() throws Exception{
+    void addVehicle() throws Exception {
         String email = "curry@chef.com";
         String token = login(email, "splash", mockMvc);
 

@@ -1,10 +1,7 @@
 package com.example.RideShare.controller;
 
 import com.example.RideShare.controller.dto.TripDto;
-import com.example.RideShare.controller.exceptions.TripNotFoundException;
-import com.example.RideShare.controller.exceptions.TripWriteUnauthorizedException;
-import com.example.RideShare.controller.exceptions.UserNotFoundException;
-import com.example.RideShare.controller.exceptions.VehicleNotFoundException;
+import com.example.RideShare.controller.exceptions.*;
 import com.example.RideShare.model.entity.Trip;
 import com.example.RideShare.model.entity.User;
 import com.example.RideShare.model.entity.Vehicle;
@@ -55,7 +52,6 @@ public class TripController {
     }
 
     @PostMapping
-    @PostAuthorize("authentication.principal == returnObject.vehicle.owner.email")
     public Trip createTrip(Authentication authentication, @RequestBody TripDto tripDto) {
         //set driver
         Trip newTrip = new Trip();
@@ -66,6 +62,10 @@ public class TripController {
         //set Vehicle
         Vehicle vehicle = vehicleRepository.findById(tripDto.getLicensePlate()).orElseThrow(
                 () -> new VehicleNotFoundException(tripDto.getLicensePlate()));
+
+        //check if vehicle belongs to user
+        if (!vehicle.getOwner().getEmail().equals(authentication.getName()))
+            throw new VehicleOwnerIncorrectException(tripDto.getLicensePlate(), authentication.getName());
         newTrip.setVehicle(vehicle);
 
         //set the days of weeks the trip is going on for
@@ -78,13 +78,15 @@ public class TripController {
         newTrip.setSaturday(tripDto.isSaturday());
         
         //set start date
-        newTrip.setStartDate(tripDto.getStartDate());
+        if (tripDto.getStartDate() != null)
+            newTrip.setStartDate(tripDto.getStartDate());
         
         //set is Recurring
         newTrip.setRecurring(tripDto.isRecurring());
 
         //set end date
-        newTrip.setEndDate(tripDto.getEndDate());
+        if (tripDto.getEndDate() != null)
+            newTrip.setEndDate(tripDto.getEndDate());
 
         //set pickup time
         newTrip.setPickupTime(tripDto.getPickupTime());
@@ -152,13 +154,14 @@ public class TripController {
 
     // Update Trip
     @PutMapping("/{tripId}")
-    @PostAuthorize("(returnObject.driver.email == authentication.principal) &&" +
-            "(returnObject.vehicle.owner.email == authentication.principal)")
-    public Trip updateTrip(@RequestBody TripDto updatedTripDto, @PathVariable Long tripId) {
+    public Trip updateTrip(Authentication authentication, @RequestBody TripDto updatedTripDto, @PathVariable Long tripId) {
         return repository.findById(tripId)
                 .map(trip -> {
                     Vehicle vehicle = vehicleRepository.findById(updatedTripDto.getLicensePlate()).orElseThrow(
                             () -> new VehicleNotFoundException(updatedTripDto.getLicensePlate()));
+
+                    if (!vehicle.getOwner().getEmail().equals(authentication.getName()))
+                        throw new VehicleOwnerIncorrectException(updatedTripDto.getLicensePlate(), authentication.getName());
                     trip.setVehicle(vehicle);
                     //set the days of weeks the trip is going on for
                     trip.setSunday(updatedTripDto.isSunday());
@@ -170,13 +173,15 @@ public class TripController {
                     trip.setSaturday(updatedTripDto.isSaturday());
 
                     //set start date
-                    trip.setStartDate(updatedTripDto.getStartDate());
+                    if (updatedTripDto.getStartDate() != null)
+                        trip.setStartDate(updatedTripDto.getStartDate());
 
                     //set is Recurring
                     trip.setRecurring(updatedTripDto.isRecurring());
 
                     //set end date
-                    trip.setEndDate(updatedTripDto.getEndDate());
+                    if (updatedTripDto.getEndDate() != null)
+                        trip.setEndDate(updatedTripDto.getEndDate());
 
                     //set pickup time
                     trip.setPickupTime(updatedTripDto.getPickupTime());
