@@ -77,7 +77,7 @@ public class PassengerTests {
                         .header("Authorization", authorizedToken)
         ).andReturn().getResponse();
 
-        assertEquals(200, authorizedRes.getStatus());
+        assertEquals(200, authorizedRes2.getStatus());
         assertFalse(passengerRepository.existsById(new PassengerKey(passengerTripId, email)));
     }
 }
