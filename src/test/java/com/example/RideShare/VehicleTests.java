@@ -1,6 +1,7 @@
 package com.example.RideShare;
 
 import com.example.RideShare.model.entity.Vehicle;
+import com.example.RideShare.model.repository.TripRepository;
 import com.example.RideShare.model.repository.VehicleRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -30,6 +31,8 @@ public class VehicleTests {
     @Autowired
     private VehicleRepository vehicleRepository;
 
+    @Autowired
+    private TripRepository tripRepository;
     @Test
     void addVehicle() throws Exception {
         String email = "curry@chef.com";
@@ -92,6 +95,8 @@ public class VehicleTests {
 
         //ensure that the vehicle was successfully deleted
         assertFalse(vehicleRepository.existsById("TS1989"));
+
+        assertFalse(tripRepository.existsById(3L));
     }
 
     @Test

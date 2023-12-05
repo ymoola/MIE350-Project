@@ -15,6 +15,7 @@ import com.example.RideShare.model.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
@@ -73,10 +74,11 @@ public class TripRequestController {
                 () -> new TripNotFoundException(tripRequestDto.getTripId()));
         int capacity = trip.getVehicle().getPassengerSeats();
 
-        PassengerKey passangerKey = new PassengerKey(tripRequestDto.getTripId(), requesterEmail);
-        if (passengerRepository.existsById(passangerKey)){
-          throw new PassangerAlreadyRegisteredException(tripRequestDto.getTripId(), requesterEmail);
+        PassengerKey passengerKey = new PassengerKey(tripRequestDto.getTripId(), requesterEmail);
+        if (passengerRepository.existsById(passengerKey)){
+          throw new PassengerAlreadyRegisteredException(tripRequestDto.getTripId(), requesterEmail);
         }
+
         if (trip.getPassengers() != null && trip.getPassengers().size() == capacity) {
             throw new TripFullException(trip.getTripId());
         }
@@ -116,12 +118,13 @@ public class TripRequestController {
     }
 
     @DeleteMapping("accept/{tripId}/{userEmail}")
-    void acceptRequest(Authentication authentication, @PathVariable long tripId, @PathVariable String email){
+    @Transactional
+    public void acceptRequest(Authentication authentication, @PathVariable long tripId, @PathVariable String userEmail){
         Trip trip = tripRepository.findById(tripId)
                 .orElseThrow(() -> new TripNotFoundException(tripId));
 
         if (!trip.getDriver().getEmail().equals(authentication.getName()))
-            throw new TripRequestDecisionUnauthorizedException(tripId, email);
+            throw new TripRequestDecisionUnauthorizedException(tripId, userEmail);
 
         int capacity = trip.getVehicle().getPassengerSeats();
         //throw exception if already full
@@ -129,10 +132,10 @@ public class TripRequestController {
             throw new TripFullException(trip.getTripId());
         }
 
-        PassengerKey key = new PassengerKey(tripId, email);
+        PassengerKey key = new PassengerKey(tripId, userEmail);
 
-        User requester = userRepository.findById(email)
-                .orElseThrow(() -> new UserNotFoundException(email));
+        User requester = userRepository.findById(userEmail)
+                .orElseThrow(() -> new UserNotFoundException(userEmail));
 
         Passenger newPassenger = new Passenger();
         newPassenger.setPassengerKey(key);
@@ -140,10 +143,10 @@ public class TripRequestController {
         newPassenger.setTrip(trip);
         passengerRepository.save(newPassenger);
 
-        repository.deleteById(new TripRequestKey(tripId, email));
+        repository.deleteById(new TripRequestKey(tripId, userEmail));
 
         //if this was the last passenger slot
-        if(trip.getPassengers().size()- capacity == 1)
+        if(trip.getPassengers().size() == capacity - 1)
             repository.deleteByTrip(tripId);
     }
 }
