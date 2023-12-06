@@ -26,7 +26,7 @@ public class Trip {
 
     @ManyToOne
     @JoinColumn(name = "driverEmail")
-    @JsonIgnoreProperties({"password", "isPassengerInstances"})
+    @JsonIgnoreProperties({"password", "isPassengerInstances", "tripRequestsSent"})
     @OnDelete(action = OnDeleteAction.CASCADE)
     private User driver;
 

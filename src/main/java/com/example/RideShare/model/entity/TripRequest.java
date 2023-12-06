@@ -24,14 +24,34 @@ public class TripRequest {
     @ManyToOne
     @MapsId("requesterEmail")
     @JoinColumn(name = "requesterEmail")
-    @JsonIgnoreProperties({"tripRequestsSent", "password"})
+    @JsonIgnoreProperties({"tripRequestsSent",
+                            "password",
+                            "phoneNumber",
+                            "address",
+                            "postalCode",
+                            "isPassengerInstances"
+                            })
     @OnDelete(action = OnDeleteAction.CASCADE)
     private User user;
 
     @ManyToOne
     @MapsId("tripId")
     @JoinColumn(name = "tripId")
-    @JsonIgnoreProperties({"requestsForTrip"})
+    @JsonIgnoreProperties({"requestsForTrip",
+                            "vehicle",
+                            "passengers",
+                            "sunday",
+                            "monday",
+                            "tuesday",
+                            "wednesday",
+                            "thursday",
+                            "friday",
+                            "saturday",
+                            "pickupLatitude",
+                            "pickupLongitude",
+                            "destinationLatitude",
+                            "destinationLongitude"
+                            })
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Trip trip;
 

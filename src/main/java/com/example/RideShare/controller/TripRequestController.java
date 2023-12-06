@@ -114,7 +114,7 @@ public class TripRequestController {
         if (!trip.getDriver().getEmail().equals(authentication.getName()) && !email.equals(authentication.getName()))
             throw new TripRequestDecisionUnauthorizedException(tripId, email);
 
-        repository.deleteById(new TripRequestKey(tripId,email));
+        repository.deleteById(new TripRequestKey(tripId, email));
     }
 
     @DeleteMapping("accept/{tripId}/{userEmail}")

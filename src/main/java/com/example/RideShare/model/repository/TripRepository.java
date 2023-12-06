@@ -23,6 +23,8 @@ public interface TripRepository extends JpaRepository<Trip, Long> {
     @Query(value = "select * from trips where driverEmail = :email", nativeQuery = true)
     List<Trip> getByDriverEmail(@Param("email") String email);
 
+    @Query(value = "select * from trips t join passengers p on t.tripId = p.passengerTripId where p.passengerEmail = :email", nativeQuery = true)
+    List<Trip> getByPassenger(@Param("email") String email);
 
     @Modifying
     @Query(value = "delete from trips where driverEmail = :email", nativeQuery = true)

@@ -263,4 +263,9 @@ public class TripController {
     List<Trip> getDriverTrips(@PathVariable("email") String email){
         return repository.getByDriverEmail(email);
     }
+
+    @GetMapping("/getPassengerTrips/{email}")
+    List<Trip> getPassengerTrips(@PathVariable String email) {
+        return repository.getByPassenger(email);
+    }
 }
